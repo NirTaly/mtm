@@ -5,7 +5,8 @@
 		"type": "shell",
 		"label": "g++ build active file",
 		"command": "/usr/bin/gcc",
-		"args": ["-g", "-std=c99", "-pedantic-errors", "-Wall", "-Wextra", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
+		// "args": ["-g", "-std=c99", "-pedantic-errors", "-Wall", "-Wextra", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
+		"args": ["-g", "-std=c99", "-pedantic-errors", "-Wall", "-Wextra", "${fileDirname}/priority_queue*.c", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
 		"options": {
 		  "cwd": "/usr/bin"
 		},

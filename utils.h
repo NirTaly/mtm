@@ -33,6 +33,7 @@
 
 #define LOG_RED(X) { printf("%s %s %s\n",COLOR_RED,X,COLOR_RESET); }
 #define LOG_GREEN(X) { printf("%s %s %s\n",COLOR_GREEN,X,COLOR_RESET); }
+#define LOG_MAGENTA(X) { printf("%s %s %s\n",COLOR_MAGENTA,X,COLOR_RESET); }
 #define LOG_CYAN(X) { printf("%s %s %s\n",COLOR_CYAN,X,COLOR_RESET); }
 
 /******************************************************************************/
@@ -40,30 +41,30 @@
 		/* Test Case For return val == VAL:*/
 #define TEST(INDEX,EXPR,VAL,TEXT) { \
 		if (VAL != EXPR) { \
-			printf("%d) Test: " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET, INDEX); \
+			printf("%d)\t Test " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET, INDEX); \
 			fprintf(stderr, "%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
 		} else { \
-			printf("%d) Test " TEXT ":" COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
+			printf("%d)\t Test " TEXT COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
 		} }
 
 		/* Test Case For return val != VAL:*/
 #define NOT_EQUAL_TEST(INDEX,EXPR,VAL,TEXT) \
 		if (VAL == EXPR) { \
-			printf("%d) Test: " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET, INDEX); \
+			printf("%d)\t Test " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET, INDEX); \
 			fprintf(stderr, "%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
 		} else { \
-			printf("%d) Test " TEXT ":" COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
+			printf("%d)\t Test " TEXT COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
 		}
 
 /* Format For Any Type */
 #define TEST_BASE(INDEX, EXPR, VAL, TYPE, FORMAT, TEXT) { \
 			TYPE val = VAL; TYPE expr = EXPR; \
 		if (val != expr) { \
-			printf("%d) Test: " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET "Returned: " FORMAT \
+			printf("%d)\t Test " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET "Returned: " FORMAT \
 				"\tExpected: " FORMAT "\n", INDEX, expr,val); \
 			fprintf(stderr, "%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
 		} else { \
-			printf("%d) Test " TEXT ":" COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
+			printf("%d)\t Test " TEXT COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
 		} }
 
 /* comparisson between 2 strings */
@@ -88,9 +89,9 @@
 				  } \
 							}
 
-#define TEST_TRUE(EXPR, VAL, I) { \
+#define TEST_TRUE(EXPR, VAL) { \
 		if(EXPR != VAL) { \
-			fprintf(stderr, "i =%d ,%s: %03d: %s: FAILED!\n",I, __FILE__, __LINE__, #EXPR); \
+			fprintf(stderr, ",%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
 				  } \
 							}
 
@@ -109,4 +110,4 @@
 		return (EXIT_STATUS); \
 						 } \
 						 							 }
-													  
+#define CHECK_VLG(X)	{ LOG_MAGENTA("\t\t\tCheck Valgrind\n")}												  
