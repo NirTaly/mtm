@@ -2,7 +2,7 @@
 objects = priority_queue.o priority_queue_test.o
 
 CC=gcc
-CFLAGS=-std=c99 -pedantic-errors -Wall -Wextra -g
+CFLAGS=-std=c99 -pedantic-errors -Wall -Wextra -g -DNDEBUG
 LDFLAGS=
 
 #rule : (prerequisites)
@@ -11,6 +11,9 @@ LDFLAGS=
 priority_queue : $(objects)
 	$(CC) $(LDFLAGS) -o $@ $^
 
+.PHONY : all
+all :
+	gcc -std=c99 -pedantic-errors -Wall -Wextra -g -DNDEBUG *.o *.c -o priority_queue
 
 .PHONY : clean
 clean : cleanO

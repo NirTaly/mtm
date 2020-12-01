@@ -61,7 +61,6 @@ PriorityQueue pqCreate(CopyPQElement copy_element,
 			pq->compare_priorities = compare_priorities;
 			pq->start = NULL;
 			pq->iter = NULL;
-
 		}
 	}
 	
@@ -100,6 +99,7 @@ PriorityQueue pqCopy(PriorityQueue queue)
 			}
 		}
 
+		queue->iter = NULL;
 		pq_copy->iter = NULL; // Now it's "undefined"
 	}
 	return pq_copy;
@@ -146,8 +146,8 @@ PriorityQueueResult pqInsert(PriorityQueue queue, PQElement element, PQElementPr
 		queue->iter = NULL;
 		
 		// incase <priority> is the best priority in queue or queue isEmpty
-		if ((queue->start && queue->compare_priorities(priority,queue->start->priority) > 0) ||
-			pqIsEmpty(queue))
+		if ((pqIsEmpty(queue)) ||
+			queue->compare_priorities(priority,queue->start->priority) > 0)
 		{
 			PQNode new_node = pqPush(queue,element,priority);
 			return (new_node ? PQ_SUCCESS : PQ_OUT_OF_MEMORY);
@@ -156,7 +156,7 @@ PriorityQueueResult pqInsert(PriorityQueue queue, PQElement element, PQElementPr
 		PQNode runner = NULL;
 		for (runner = queue->start; runner->next; runner = runner->next)
 		{	
-			if (runner->next && queue->compare_priorities(priority,runner->next->priority) > 0)
+			if (queue->compare_priorities(priority,runner->next->priority) > 0)
 			{
 				break;
 			}
