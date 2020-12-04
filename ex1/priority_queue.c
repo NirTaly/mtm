@@ -35,7 +35,6 @@ static void destroyNode(PriorityQueue pq, PQNode node);
 static PQNode insertAfter(PriorityQueue pq, PQNode curr_node, PQElement elem, PQElementPriority prio);
 static PQNode pqPush(PriorityQueue pq, PQElement elem, PQElementPriority prio);
 static bool pqIsEmpty(PriorityQueue pq);
-// static void swapNodes(PQNode curr, PQNode next_curr);
 
 /******************************************************************************/
 
