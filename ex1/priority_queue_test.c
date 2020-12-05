@@ -547,4 +547,3 @@ void FREEBADMALLOCFUNC(PQElement element)
 {
 	free(element);
 }
-
