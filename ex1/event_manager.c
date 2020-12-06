@@ -3,18 +3,26 @@
                             Roee Latzres , Nir Tali
                             04.12.20  
  *****************************************************************************/
-#include	<stddef.h>	// NULL
-#include	<stdlib.h>  // MALLOC
-#include	<string.h>	// strcmp
+#include <stdio.h>	// fopen	
+#include <stddef.h>	// NULL
+#include <stdlib.h> // MALLOC
+#include <string.h>	// strcmp
 
 #include "event_manager.h"
 #include "priority_queue.h"
 #include "date.h"
 
+typedef struct MemPrio_t
+{
+	unsigned int event_count;
+	int uid;
+}MemPrio;
+
 struct Information_t
 {
 	char* name;
 	int uid;
+	unsigned int event_count;
 };
 typedef struct Information_t* Info;
 
@@ -34,14 +42,24 @@ struct EventManager_t
 
 
 /******************************************************************************/
+static Event* eventFromUID(EventManager em, int event_id);
+static bool eventExistInDate(EventManager em, Event* event, Date date);
+static void unlinkMembersfromEvent(EventManager em, Event* event);
+static EventManagerResult canInsert(EventManager em,Event event);
+static EventManagerResult createEvent(EventManager em, char* event_name, Date date, int event_id, Event* event);
+static Info infoFromUID(EventManager em, int member_id);
+static void printEvent(Event* event, FILE* file);
+static void printDate(Date date, FILE* file);
+static void printMembers(PriorityQueue mem_list, FILE* file);
+
 // PQ System Member List Fucntions
 PQElement copyInfoElem(PQElement elem);
-PQElementPriority copyEventCountPrio(PQElementPriority events_count);
 void freeInfoElem(PQElement elem);
-void freeEventCountPrio(PQElementPriority event_count);
 bool equalInfoElem(PQElement info1, PQElement info2);
-int cmpEventCountPrio(PQElementPriority count1, PQElementPriority count2);
-/******************************************************************************/
+PQElementPriority copyMemPrio(PQElementPriority priority);
+void freeMemPrio(PQElementPriority priority);
+int compareMemPrio(PQElementPriority prio1, PQElementPriority prio2);
+
 // PQ Event Manager Fucntions
 PQElement copyEventElem(PQElement elem);
 PQElementPriority copyDatePrio(PQElementPriority date);
@@ -49,6 +67,14 @@ void freeEventElem(PQElement elem);
 void freeDatePrio(PQElementPriority date);
 bool equalEventElem(PQElement event1, PQElement event2);
 int compareDatePrio(PQElementPriority date1, PQElementPriority date2);
+
+// Event's Member List PQ Functions
+PQElement copyIDElem(PQElement element);
+PQElementPriority copyIDPrio(PQElementPriority priority);
+void freeIDElem(PQElement element);
+void freeIDPrio(PQElementPriority priority);
+bool isEqualIDElem(PQElement elem1,PQElement elem2);
+int compareIDPrio(PQElementPriority prio1, PQElementPriority prio2);
 
 /******************************************************************************/
 
@@ -59,8 +85,8 @@ EventManager createEventManager(Date date)
 	{
 		em->events = pqCreate(copyEventElem,freeEventElem,equalEventElem,dateCopy,
 								dateDestroy,dateCompare);
-		em->mem_list = pqCreate(copyInfoElem,freeInfoElem,equalInfoElem,copyEventCountPrio,
-								freeEventCountPrio, cmpEventCountPrio);
+		em->mem_list = pqCreate(copyInfoElem,freeInfoElem,equalInfoElem,copyMemPrio,
+								freeMemPrio, compareMemPrio);
 		em->sys_date = dateCopy(date);
 
 		if (!em->events || !em->mem_list || !em->sys_date)
@@ -124,8 +150,168 @@ EventManagerResult emAddEventByDiff(EventManager em, char* event_name, int days,
 
 	return (EM_NULL_ARGUMENT);
 }
+/******************************************************************************/
 
+EventManagerResult emRemoveEvent(EventManager em, int event_id)
+{
+	if (em && 0 <= event_id)
+	{
+		Event* event = eventFromUID(em, event_id);
+		if (event)
+		{
+			unlinkMembersfromEvent(em,event);
+			pqRemoveElement(em->events, &event_id);
+		}
+		
+		return (EM_EVENT_NOT_EXISTS);
+	}
+	
+	return (em ? EM_INVALID_EVENT_ID : EM_NULL_ARGUMENT);
+}
+/******************************************************************************/
 
+EventManagerResult emChangeEventDate(EventManager em, int event_id, Date new_date)
+{
+	if (em && new_date)
+	{
+		if (0 <= dateCompare(new_date,em->sys_date))
+		{
+			if (event_id >= 0)
+			{
+				if (pqContains(em->events,event_id))
+				{
+					Event* event = eventFromUID(em, event_id);
+					if (!eventExistInDate(em, event, new_date))
+					{
+						return (pqChangePriority(em->events,event,event->date,new_date));
+					}
+					
+					return (EM_EVENT_ALREADY_EXISTS);
+				}
+				
+				return (EM_EVENT_NOT_EXISTS);
+			}
+			
+			return (EM_INVALID_EVENT_ID);
+		}
+		
+		return (EM_INVALID_DATE);
+	}
+
+	return (EM_NULL_ARGUMENT);
+}
+
+/******************************************************************************/
+EventManagerResult emAddMember(EventManager em, char* member_name, int member_id)
+{
+	if (em && member_name)
+	{
+		if (member_id >= 0)
+		{
+			if (!pqContains(em->mem_list, member_id))
+			{
+				struct Information_t info = {member_name, member_id, 0};
+
+				MemPrio prio = {0, member_id};
+
+				return (pqInsert(em->mem_list, &info, &prio));
+			}
+			
+			return (EM_MEMBER_ID_ALREADY_EXISTS);
+		}
+
+		return (EM_INVALID_EVENT_ID);
+	}
+	
+	return (EM_NULL_ARGUMENT);
+}
+
+/******************************************************************************/
+EventManagerResult emAddMemberToEvent(EventManager em, int member_id, int event_id)
+{
+	if (em)
+	{
+		if (event_id >= 0 && member_id >= 0)
+		{
+			Event* event = eventFromUID(em, event_id);
+			if (event)
+			{
+				if (pqContains(em->mem_list, member_id))
+				{
+					if (!pqContains(event->mem_list,member_id))
+					{
+						Info member_info = infoFromUID(em, member_id);
+						MemPrio new_prio = {member_info->event_count + 1, member_id};
+						MemPrio old_prio = {member_info->event_count, member_id};
+						
+						member_info->event_count += 1;
+
+						if (PQ_SUCCESS == pqInsert(event->mem_list, member_id, member_id) &&
+							PQ_SUCCESS == pqChangePriority(em->mem_list,member_info,&old_prio,&new_prio))
+						{
+							return (EM_SUCCESS);
+						}
+
+						return (EM_OUT_OF_MEMORY);
+					}
+					
+					return (EM_EVENT_AND_MEMBER_ALREADY_LINKED);
+				}
+				
+				return (EM_MEMBER_ID_NOT_EXISTS);
+			}
+			return (EM_EVENT_ID_NOT_EXISTS);
+		}
+
+		return (event_id < 0 ? EM_INVALID_EVENT_ID : EM_INVALID_MEMBER_ID);
+	}
+	
+	return (EM_NULL_ARGUMENT);
+}
+
+/******************************************************************************/
+EventManagerResult emRemoveMemberFromEvent (EventManager em, int member_id, int event_id)
+{
+	if (em)
+	{
+		if (event_id >= 0 && member_id >= 0)
+		{
+			Event* event = eventFromUID(em, event_id);
+			if (event)
+			{
+				if (pqContains(em->mem_list, member_id))
+				{
+					if (pqContains(event->mem_list,member_id))
+					{
+						Info member_info = infoFromUID(em, member_id);
+						MemPrio new_prio = {member_info->event_count - 1, member_id};
+						MemPrio old_prio = {member_info->event_count, member_id};
+						
+						member_info->event_count -= 1;
+
+						if (PQ_SUCCESS == pqRemoveElement(event->mem_list, member_id) &&
+							PQ_SUCCESS == pqChangePriority(em->mem_list,member_info,&old_prio,&new_prio))
+						{
+							return (EM_SUCCESS);
+						}
+
+						return (EM_OUT_OF_MEMORY);
+					}
+					
+					return (EM_EVENT_AND_MEMBER_NOT_LINKED);
+				}
+			
+				return (EM_MEMBER_ID_NOT_EXISTS);
+			}
+			
+			return (EM_EVENT_ID_NOT_EXISTS);
+		}
+
+		return (event_id < 0 ? EM_INVALID_EVENT_ID : EM_INVALID_MEMBER_ID);
+	}
+	
+	return (EM_NULL_ARGUMENT);
+}
 
 /******************************************************************************/
 EventManagerResult emTick(EventManager em, int days)
@@ -142,7 +328,7 @@ EventManagerResult emTick(EventManager em, int days)
 			Event* event = pqGetFirst(em->events);
 			while (event && 0 > dateCompare(event->date,em->sys_date))
 			{
-				unlinkMemberToEvent(em, event); // NEED TO LET MEMBERS KNOW THAT EVENT REMOVED
+				unlinkMembersfromEvent(em, event);
 				pqRemove(em->events);
 				event = pqGetFirst(em->events);
 			}
@@ -183,35 +369,143 @@ char* emGetNextEvent(EventManager em)
 }
 
 /******************************************************************************/
+void emPrintAllEvents(EventManager em, const char* file_name)
+{
+	FILE* file = fopen(file_name, "w+");
+	if (em && file_name && file)
+	{
+		PQ_FOREACH(Event*, event_runner, em->events)
+		{
+			printEvent(event_runner, file);
+		}
+	}
+}
+
+/******************************************************************************/
+
+void emPrintAllResponsibleMembers(EventManager em, const char* file_name)
+{
+	FILE* file = fopen(file_name, "w+");
+	if (em && file_name && file)
+	{
+		PQ_FOREACH(Info, mem_info, em->sys_date)
+		{
+			fprintf(file,"%s,%d\n", mem_info->name, mem_info->event_count);
+		}	
+	}
+}
+
+/******************************************************************************/
+// write line of event details into file
+static void printEvent(Event* event, FILE* file)
+{
+	fprintf(file, "%s,",event->info->name);
+	printDate(event->date, file);
+	printMembers(event->mem_list, file);
+	fprintf(file,"\n");
+}
+
+/******************************************************************************/
+static void printDate(Date date, FILE* file)
+{
+	int day, month, year;
+	dateGet(date, &day, &month, &year);
+
+	fprintf(file,"%d.%d.%d", day, month, year);
+}
+/******************************************************************************/
+
+static void printMembers(PriorityQueue mem_list, FILE* file)
+{
+	PQ_FOREACH(int, uid, mem_list)
+	{
+		fprintf(file, ",%d",uid);
+	}
+}
+/******************************************************************************/
+// find Event* connected to event_id
+// return Event* if found, else NULL
+static Event* eventFromUID(EventManager em, int event_id)
+{
+	PQ_FOREACH(Event*, event_runner, em->events)
+	{
+		if (event_runner->info->uid == event_id)
+		{
+			return (event_runner);
+		}
+	}
+
+	return (NULL);
+}
+// find Info connected to member_id
+// return Info if found, else NULL
+static Info infoFromUID(EventManager em, int member_id)
+{
+	PQ_FOREACH(Info, info_runner, em->sys_date)
+	{
+		if (info_runner->uid == member_id)
+		{
+			return (info_runner);
+		}
+	}
+
+	return (NULL);
+}
+// return true if event's name is already in current date, else return false
+static bool eventExistInDate(EventManager em, Event* event, Date date)
+{
+	int date_cmp_ret = 0;
+	Event* runner = pqGetFirst(em->events);
+	do
+	{
+		if (runner)
+		{
+			date_cmp_ret = dateCompare(runner->date, date);
+			if (0 == date_cmp_ret)
+			{
+				if (0 == strcmp(runner->info->name, event->info->name))
+				{
+					return (true);
+				}
+			}
+		}
+		runner = pqGetNext(em->events);
+	}
+	while (runner && 0 >= date_cmp_ret);
+
+	return (false);
+}
+/******************************************************************************/
+// unlink members from event
+static void unlinkMembersfromEvent(EventManager em, Event* event)
+{
+	int* member_uid = pqGetFirst(event->mem_list);
+	while (member_uid)
+	{
+		emRemoveMemberFromEvent(em,*member_uid,event->info->uid);
+
+		member_uid = pqGetFirst(event->mem_list);
+	}
+}
+
+/******************************************************************************/
 // Check if event can be inserted to <em>
 // Return suitable return value
 static EventManagerResult canInsert(EventManager em,Event event)
 {
 	if (dateCompare(em->sys_date,event.date) <= 0)
 	{
-		Event* runner = pqGetFirst(em->events);
-		int date_cmp_ret = dateCompare(runner->date, event.date);
-		
-		while (runner && 0 >= date_cmp_ret)
+		if (eventExistInDate(em, &event, event.date))
 		{
-			if (0 == date_cmp_ret)
+			if (!pqContains(em->events,&(event.info->uid)))
 			{
-				if (0 == strcmp(runner->info->name, event.info->name))
-				{
-					return (EM_EVENT_ALREADY_EXISTS);
-				}
-				if (runner->info->uid == event.info->uid)
-				{
-					return (EM_EVENT_ID_ALREADY_EXISTS);
-				}
+				return (EM_SUCCESS);
 			}
-			runner = pqGetNext(em->events);
-			if (runner)
-			{
-				date_cmp_ret = dateCompare(runner->date, event.date);
-			}
+
+			return (EM_EVENT_ID_ALREADY_EXISTS);
 		}
-		return (EM_SUCCESS);
+		
+		return (EM_EVENT_ALREADY_EXISTS);
 	}
 
 	return (EM_INVALID_DATE);
@@ -227,7 +521,8 @@ static EventManagerResult createEvent(EventManager em, char* event_name, Date da
 		{
 			if (event_id >= 0)
 			{
-				event->mem_list = pqCreate(...............);	
+				event->mem_list = pqCreate(copyIDElem,freeIDElem,isEqualIDElem,
+											copyIDPrio,freeIDPrio,compareIDPrio);	
 				event->date = copyDate(date);
 				if (!event->date || !event->mem_list)
 				{
@@ -239,6 +534,7 @@ static EventManagerResult createEvent(EventManager em, char* event_name, Date da
 				
 				event->info->name = event_name;
 				event->info->uid = event_id;
+				event->info->event_count = 0;
 
 				return (EM_SUCCESS);
 			}
@@ -248,11 +544,11 @@ static EventManagerResult createEvent(EventManager em, char* event_name, Date da
 	}
 	return (EM_NULL_ARGUMENT);	
 }
-
 /******************************************************************************/
 
-/******************************************************************************/
-/******************************************************************************/
+/******************************************************************************
+ * 	System Member List PQ Functions
+ *****************************************************************************/
 PQElement copyInfoElem(PQElement elem)
 {
 	Info cpy_info = (Info)elem;
@@ -260,6 +556,7 @@ PQElement copyInfoElem(PQElement elem)
 	Info info = malloc(sizeof(struct Information_t));
 	if (info)
 	{
+		info->event_count = cpy_info->event_count;
 		info->uid = cpy_info->uid;
 		info->name = strdup(cpy_info->name);
 		if (!info->name)
@@ -270,10 +567,6 @@ PQElement copyInfoElem(PQElement elem)
 	
 	return (info);
 }
-PQElementPriority copyEventCountPrio(PQElementPriority events_count)
-{
-	return (events_count);
-}
 
 void freeInfoElem(PQElement elem)
 {
@@ -282,24 +575,44 @@ void freeInfoElem(PQElement elem)
 	elem = NULL;
 }
 
-void freeEventCountPrio(PQElementPriority event_count)
-{
-	(void)event_count;
-}
 bool equalInfoElem(PQElement elem1, PQElement elem2)
 {
 	Info info1 = (Info)elem1;
 	Info info2 = (Info)elem2;
 
-	return (0 == strcmp(info1->name,info2->name) &&	info1->uid == info1->uid);
-}
-int cmpEventCountPrio(PQElementPriority count1, PQElementPriority count2)
-{
-	return (count1 - count2);
+	return (info1->uid == info1->uid);
 }
 
-/******************************************************************************/
-/******************************************************************************/
+PQElementPriority copyMemPrio(PQElementPriority priority)
+{
+	MemPrio* prio = malloc(sizeof(struct MemPrio_t));
+	if (prio)
+	{
+		prio->event_count = ((MemPrio*)(priority))->event_count;
+		prio->uid = ((MemPrio*)(priority))->uid;
+	}
+}
+void freeMemPrio(PQElementPriority priority)
+{
+	free (priority);
+}
+int compareMemPrio(PQElementPriority prio1, PQElementPriority prio2)
+{
+	MemPrio* lhs = prio1;
+	MemPrio* rhs = prio2;
+
+	int first_order = (lhs->event_count - rhs->event_count);
+
+	if (0 == first_order)
+	{
+		return (rhs->uid - lhs->uid);
+	}
+	
+	return (first_order);
+}
+/******************************************************************************
+ * Event's PQ Functions
+ *****************************************************************************/
 PQElement copyEventElem(PQElement elem)
 {
 	Event* cpy_event = (Event*)elem;
@@ -318,10 +631,6 @@ PQElement copyEventElem(PQElement elem)
 
 	return (event);
 }
-// PQElementPriority copyDatePrio(PQElementPriority events_count)
-// {
-// 	return copyDate()
-// }
 void freeEventElem(PQElement elem)
 {
 	Event* event = (Event*)elem;
@@ -331,18 +640,37 @@ void freeEventElem(PQElement elem)
 	pqDestroy(event->mem_list);
 
 }
-// void freeDatePrio(PQElementPriority date)
-// {
-// 	dateDestroy((Date)date);
-// }
-bool equalEventElem(PQElement event1, PQElement event2)
+bool equalEventElem(PQElement uid1, PQElement uid2)
 {
-	Info info1 = ((Event*)event1)->info;
-	Info info2 = ((Event*)event2)->info;
-
-	return (equalInfoElem(info1, info2));
+	return (*(int*)uid1 == *(int*)uid2);
 }
-// int compareDatePrio(PQElementPriority date1, PQElementPriority date2)
-// {
-// 	return (dateCompare())
-// }
+
+/******************************************************************************
+ * 	Event's Member List PQ Functions
+ *****************************************************************************/
+PQElement copyIDElem(PQElement element)
+{
+	return (element);
+}
+PQElementPriority copyIDPrio(PQElementPriority priority)
+{
+	return (priority);
+}
+void freeIDElem(PQElement element)
+{
+	(void)element;
+}
+void freeIDPrio(PQElementPriority priority)
+{
+	(void)priority;
+}
+bool isEqualIDElem(PQElement elem1,PQElement elem2)
+{
+	// return (*(int*)elem1 == *(int*)elem2);
+	return (elem1 == elem2);
+}
+int compareIDPrio(PQElementPriority prio1, PQElementPriority prio2)
+{
+	// return (*(int*)prio1 - *(int*)prio2);
+	return (prio1 - prio2);
+}
