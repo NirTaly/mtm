@@ -1,5 +1,5 @@
 #makefile variable/macros
-objects = priority_queue.o priority_queue_test.o
+objects = priority_queue.o priority_queue_test.o event_manager.o date.o
 
 CC=gcc
 CFLAGS=-std=c99 -pedantic-errors -Wall -Wextra -g -DNDEBUG
