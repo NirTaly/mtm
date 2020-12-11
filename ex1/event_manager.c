@@ -540,7 +540,7 @@ static EventManagerResult canInsert(EventManager em,Event event)
 // Return suitable return value
 static EventManagerResult createEvent(EventManager em, char* event_name, Date date, int event_id, Event* event)
 {
-	if (event_name && date)
+	if (em && event_name && date)
 	{
 		if (0 <= dateCompare(date,em->sys_date))
 		{
