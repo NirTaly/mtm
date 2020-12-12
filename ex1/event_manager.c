@@ -125,7 +125,7 @@ EventManagerResult emAddEventByDate(EventManager em, char* event_name, Date date
 	info.uid = event_id;
 	info.event_count = 0;
 	event.info = &info;
-
+	
 	EventManagerResult create_ret = createEvent(em, event_name, date, event_id, &event);
 	if (em && EM_SUCCESS == create_ret)
 	{
@@ -140,15 +140,10 @@ EventManagerResult emAddEventByDate(EventManager em, char* event_name, Date date
 			destroyEvent(event);
 			return (insert_ret);
 		}
-
+		destroyEvent(event);
 		return (can_insert_ret);
 	}
-	if (em)
-	{
-		destroyEvent(event);
-		return (create_ret);
-	}
-	return (EM_NULL_ARGUMENT);
+	return (!em ? EM_NULL_ARGUMENT : create_ret);
 }
 /******************************************************************************/
 EventManagerResult emAddEventByDiff(EventManager em, char* event_name, int days, int event_id)
@@ -198,13 +193,22 @@ EventManagerResult emChangeEventDate(EventManager em, int event_id, Date new_dat
 				Event cmp_event;
 				struct Information_t info = {NULL,event_id,0};
 				cmp_event.info = &info;
-				// cmp_event.info->uid = event_id;
 				if (pqContains(em->events,&cmp_event))
 				{
 					Event* event = eventFromUID(em, event_id);
 					if (!eventExistInDate(em, event, new_date))
 					{
-						return (pqChangePriority(em->events,event,event->date,new_date));
+						EventManagerResult retval = EM_OUT_OF_MEMORY;
+						Event* cpy_event = copyEventElem(event);
+						if (cpy_event)
+						{
+							retval = pqChangePriority(em->events,cpy_event,event->date,new_date);
+							freeEventElem(cpy_event);
+							
+							return (retval);
+						}
+						return (EM_OUT_OF_MEMORY);
+						
 					}
 					
 					return (EM_EVENT_ALREADY_EXISTS);
@@ -264,17 +268,24 @@ EventManagerResult emAddMemberToEvent(EventManager em, int member_id, int event_
 					if (!pqContains(event->mem_list,&member_id))
 					{
 						Info member_info = infoFromUID(em, member_id);
+						Info cpy_mem = copyInfoElem(member_info);
+						if (!cpy_mem)
+						{
+							return (EM_OUT_OF_MEMORY);
+						}
+
 						MemPrio new_prio = {member_info->event_count + 1, member_id};
 						MemPrio old_prio = {member_info->event_count, member_id};
 						
-						member_info->event_count += 1;
+						cpy_mem->event_count += 1;
 
 						if (PQ_SUCCESS == pqInsert(event->mem_list, &member_id, &member_id) &&
-							PQ_SUCCESS == pqChangePriority(em->mem_list,member_info,&old_prio,&new_prio))
+							PQ_SUCCESS == pqChangePriority(em->mem_list,cpy_mem,&old_prio,&new_prio))
 						{
+							freeInfoElem(cpy_mem);
 							return (EM_SUCCESS);
 						}
-
+						freeInfoElem(cpy_mem);
 						return (EM_OUT_OF_MEMORY);
 					}
 					
@@ -309,18 +320,29 @@ EventManagerResult emRemoveMemberFromEvent (EventManager em, int member_id, int 
 					if (pqContains(event->mem_list,&member_id))
 					{
 						Info member_info = infoFromUID(em, member_id);
+						Info cpy_mem = copyInfoElem(member_info);
+						if (!cpy_mem)
+						{
+							return (EM_OUT_OF_MEMORY);
+						}
+						
 						MemPrio new_prio = {member_info->event_count - 1, member_id};
 						MemPrio old_prio = {member_info->event_count, member_id};
 						
-						member_info->event_count -= 1;
-
-						if (PQ_SUCCESS == pqRemoveElement(event->mem_list, member_info) &&
-							PQ_SUCCESS == pqChangePriority(em->mem_list,member_info,&old_prio,&new_prio))
+						cpy_mem->event_count -= 1;
+						int* cpy_mem_id = copyIDElem(&member_id);
+						if (!cpy_mem_id)
 						{
-							return (EM_SUCCESS);
+							return (EM_OUT_OF_MEMORY);
 						}
 
-						return (EM_OUT_OF_MEMORY);
+						bool op_success =  (PQ_SUCCESS == pqRemoveElement(event->mem_list, cpy_mem_id) &&
+								PQ_SUCCESS == pqChangePriority(em->mem_list,cpy_mem,&old_prio,&new_prio));
+						
+						freeIDElem(cpy_mem_id);
+						freeInfoElem(cpy_mem);
+						
+						return (op_success ? EM_SUCCESS : EM_OUT_OF_MEMORY);
 					}
 					
 					return (EM_EVENT_AND_MEMBER_NOT_LINKED);
@@ -404,6 +426,8 @@ void emPrintAllEvents(EventManager em, const char* file_name)
 			printEvent(event_runner, file);
 		}
 	}
+
+	fclose(file);
 }
 
 /******************************************************************************/
@@ -418,6 +442,8 @@ void emPrintAllResponsibleMembers(EventManager em, const char* file_name)
 			fprintf(file,"%s,%d\n", mem_info->name, mem_info->event_count);
 		}	
 	}
+
+	fclose(file);
 }
 
 /******************************************************************************/

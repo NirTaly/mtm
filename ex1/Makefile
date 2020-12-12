@@ -1,15 +1,19 @@
 #makefile variable/macros
-objects = priority_queue.o priority_queue_test.o event_manager.o date.o
-
+pq_objects = priority_queue.o tests/priority_queue_test.o
+em_objects = event_manager_test.o event_manager.o date.o 
+bin = priority_queue event_manager
 CC=gcc
 CFLAGS=-std=c99 -pedantic-errors -Wall -Wextra -g -DNDEBUG
-LDFLAGS=
+LDFLAGS= -L. -lpriority_queue
 
 #rule : (prerequisites)
 #   recipe....
 
-priority_queue : $(objects)
-	$(CC) $(LDFLAGS) -o $@ $^
+event_manager : $(em_objects)
+	$(CC) $^ $(LDFLAGS) -o $@ 
+
+priority_queue : $(pq_objects)
+	$(CC) -o $@ $^
 
 .PHONY : all
 all :
@@ -17,19 +21,18 @@ all :
 
 .PHONY : clean
 clean : cleanO
-	rm -f priority_queue 
+	rm -f $(bin) 
 
 .PHONY : cleanO
 cleanO :
-	rm -f $(objects)
+	rm -f $(pq_objects) $(em_objects)
 
 .PHONY : run
 run :
-	./priority_queue
-
-.PHONY : run
+	./event_manager
+.PHONY : runVLG
 runVLG :
-	valgrind --leak-check=yes --track-origins=yes ./priority_queue
+	valgrind --leak-check=yes --track-origins=yes ./event_manager
 
 %.o: %.c
 	@echo Compile $< to $@
