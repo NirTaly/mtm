@@ -22,6 +22,10 @@
  * If expr is false, ends the test by returning false and prints a detailed
  * message about the failure.
  */
+
+#define LOG_RED(X) { printf("%s <b>%s</b> %s\n",COLOR_RED,X,COLOR_RESET); }
+#define LOG_GREEN(X) { printf("%s <b>%s</b> %s\n",COLOR_GREEN,X,COLOR_RESET); }
+
  #define ASSERT_TEST(expr, goto_label)                                                         \
      do {                                                                          \
          if (!(expr)) {                                                            \
@@ -38,9 +42,9 @@
     do {                                 \
       printf("Running %s ... ", name);   \
         if (test()) {                    \
-            printf("[OK]\n");            \
+            LOG_GREEN("[OK]");            \
         } else {                         \
-            printf("[Failed]\n");        \
+            LOG_RED("[Failed]");        \
         }                                \
     } while (0)
 
