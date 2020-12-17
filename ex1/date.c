@@ -17,12 +17,20 @@ struct Date_t
 	int year;
 };
 
-static bool dateIsLegal(int day, int month, int year);
+/**
+ * @brief return if date is legal
+ * @param day 
+ * @param month 
+ * @param year 
+ * @return true 
+ * @return false 
+ */
+static bool dateIsLegal(int day, int month);
 
 /******************************************************************************/
 Date dateCreate(int day, int month, int year)
 {
-	if (dateIsLegal(day,month,year))
+	if (dateIsLegal(day,month))
 	{
 		Date date = malloc(sizeof(struct Date_t));
 		if (!date)
@@ -116,13 +124,13 @@ void dateTick(Date date)
 {
 	if (date)
 	{
-		if (dateIsLegal(date->day+1,date->month,date->year))
+		if (dateIsLegal(date->day+1,date->month))
 		{
 			date->day += 1;
 		}
-		else if (dateIsLegal(1,date->month+1,date->year))
+		else if (dateIsLegal(1,date->month+1))
 		{
-			date->day = 1;
+			date->day 	 = 1;
 			date->month += 1;
 		}
 		else
@@ -136,8 +144,7 @@ void dateTick(Date date)
 
 /******************************************************************************/
 /******************************************************************************/
-static bool dateIsLegal(int day, int month, int year)
+static bool dateIsLegal(int day, int month)
 {
 	return (1 <= month && month <= 12 && 1 <= day && day <= 30);
-	(void)year;
 }

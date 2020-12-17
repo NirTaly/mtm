@@ -31,10 +31,10 @@
 #define COLOR_CYAN    "\x1b[01;36m"
 #define COLOR_RESET   "\x1b[0m"
 
-#define LOG_RED(X) { printf("%s <b>%s</b> %s\n",COLOR_RED,X,COLOR_RESET); }
-#define LOG_GREEN(X) { printf("%s <b>%s</b> %s\n",COLOR_GREEN,X,COLOR_RESET); }
-#define LOG_MAGENTA(X) { printf("%s <b>%s</b> %s\n",COLOR_MAGENTA,X,COLOR_RESET); }
-#define LOG_CYAN(X) { printf("%s <b>%s</b> %s\n",COLOR_CYAN,X,COLOR_RESET); }
+#define LOG_RED(X) { printf("%s %s %s\n",COLOR_RED,X,COLOR_RESET); }
+#define LOG_GREEN(X) { printf("%s %s %s\n",COLOR_GREEN,X,COLOR_RESET); }
+#define LOG_MAGENTA(X) { printf("%s %s %s\n",COLOR_MAGENTA,X,COLOR_RESET); }
+#define LOG_CYAN(X) { printf("%s %s %s\n",COLOR_CYAN,X,COLOR_RESET); }
 
 /******************************************************************************/
 						/* Test Macro */

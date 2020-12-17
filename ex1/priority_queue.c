@@ -29,11 +29,42 @@ struct PriorityQueue_t
 	PQNode start;
 	PQNode iter;
 };
-
+/**
+ * @brief Create a Node object
+ * 
+ * @param pq 
+ * @param element 
+ * @param priority 
+ * @return PQNode , NULL on failure
+ */
 static PQNode createNode(PriorityQueue pq, PQElement element, PQElementPriority priority);
+/**
+ * @brief destroy Node
+ * 
+ * @param pq 
+ * @param node 
+ */
 static void destroyNode(PriorityQueue pq, PQNode node);
+
+// Create new node and insert it after curr_node, if curr_node is NULL then insert in beginning of pq
+// return new node in success, NULL else
 static PQNode insertAfter(PriorityQueue pq, PQNode curr_node, PQElement elem, PQElementPriority prio);
+/**
+ * @brief Create new node and push it to the beggining of PQ
+ * 
+ * @param pq 
+ * @param elem 
+ * @param prio 
+ * @return PQNode on success, NULL if allocation failed
+ */
 static PQNode pqPush(PriorityQueue pq, PQElement elem, PQElementPriority prio);
+/**
+ * @brief check if PQ is Empty
+ * 
+ * @param pq 
+ * @return true if empty
+ * @return false if not empty
+ */
 static bool pqIsEmpty(PriorityQueue pq);
 
 /******************************************************************************/
@@ -335,8 +366,7 @@ static void destroyNode(PriorityQueue pq, PQNode node)
 	pq->iter = NULL;
 }
 
-// Create new node and insert it after curr_node, if curr_node is NULL then insert in beginning of pq
-// return new node in success, NULL else
+
 static PQNode insertAfter(PriorityQueue pq, PQNode curr_node, PQElement elem, PQElementPriority prio)
 {
 	PQNode new_node = createNode(pq, elem, prio);

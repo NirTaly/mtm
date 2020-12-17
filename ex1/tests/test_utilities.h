@@ -23,8 +23,12 @@
  * message about the failure.
  */
 
-#define LOG_RED(X) { printf("%s <b>%s</b> %s\n",COLOR_RED,X,COLOR_RESET); }
-#define LOG_GREEN(X) { printf("%s <b>%s</b> %s\n",COLOR_GREEN,X,COLOR_RESET); }
+#define COLOR_RED     "\x1b[01;31m"
+#define COLOR_GREEN   "\x1b[01;32m"
+#define COLOR_RESET   "\x1b[0m"
+
+#define LOG_RED(X) { printf("%s %s %s\n",COLOR_RED,X,COLOR_RESET); }
+#define LOG_GREEN(X) { printf("%s %s %s\n",COLOR_GREEN,X,COLOR_RESET); }
 
  #define ASSERT_TEST(expr, goto_label)                                                         \
      do {                                                                          \
