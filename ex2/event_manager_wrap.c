@@ -2964,15 +2964,7 @@ static swig_module_info swig_module = {swig_types, 5, 0, 0, 0, 0};
 
 
 #include "event_manager.h"
-#include "priority_queue.h"
 #include "date.h"
-
-
-SWIGINTERNINLINE PyObject*
-  SWIG_From_int  (int value)
-{
-  return PyInt_FromLong((long) value);
-}
 
 
 SWIGINTERN swig_type_info*
@@ -3209,6 +3201,13 @@ SWIG_AsVal_int (PyObject * obj, int *val)
     }
   }  
   return res;
+}
+
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
 }
 
 
@@ -4653,21 +4652,6 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
-  SWIG_Python_SetConstant(d, "EM_SUCCESS",SWIG_From_int((int)(EM_SUCCESS)));
-  SWIG_Python_SetConstant(d, "EM_OUT_OF_MEMORY",SWIG_From_int((int)(EM_OUT_OF_MEMORY)));
-  SWIG_Python_SetConstant(d, "EM_NULL_ARGUMENT",SWIG_From_int((int)(EM_NULL_ARGUMENT)));
-  SWIG_Python_SetConstant(d, "EM_INVALID_DATE",SWIG_From_int((int)(EM_INVALID_DATE)));
-  SWIG_Python_SetConstant(d, "EM_INVALID_EVENT_ID",SWIG_From_int((int)(EM_INVALID_EVENT_ID)));
-  SWIG_Python_SetConstant(d, "EM_EVENT_ALREADY_EXISTS",SWIG_From_int((int)(EM_EVENT_ALREADY_EXISTS)));
-  SWIG_Python_SetConstant(d, "EM_EVENT_ID_ALREADY_EXISTS",SWIG_From_int((int)(EM_EVENT_ID_ALREADY_EXISTS)));
-  SWIG_Python_SetConstant(d, "EM_EVENT_NOT_EXISTS",SWIG_From_int((int)(EM_EVENT_NOT_EXISTS)));
-  SWIG_Python_SetConstant(d, "EM_EVENT_ID_NOT_EXISTS",SWIG_From_int((int)(EM_EVENT_ID_NOT_EXISTS)));
-  SWIG_Python_SetConstant(d, "EM_INVALID_MEMBER_ID",SWIG_From_int((int)(EM_INVALID_MEMBER_ID)));
-  SWIG_Python_SetConstant(d, "EM_MEMBER_ID_ALREADY_EXISTS",SWIG_From_int((int)(EM_MEMBER_ID_ALREADY_EXISTS)));
-  SWIG_Python_SetConstant(d, "EM_MEMBER_ID_NOT_EXISTS",SWIG_From_int((int)(EM_MEMBER_ID_NOT_EXISTS)));
-  SWIG_Python_SetConstant(d, "EM_EVENT_AND_MEMBER_ALREADY_LINKED",SWIG_From_int((int)(EM_EVENT_AND_MEMBER_ALREADY_LINKED)));
-  SWIG_Python_SetConstant(d, "EM_EVENT_AND_MEMBER_NOT_LINKED",SWIG_From_int((int)(EM_EVENT_AND_MEMBER_NOT_LINKED)));
-  SWIG_Python_SetConstant(d, "EM_ERROR",SWIG_From_int((int)(EM_ERROR)));
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else

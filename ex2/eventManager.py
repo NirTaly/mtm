@@ -26,7 +26,8 @@ def linesFromFile(orig_file_path: str) -> list:
 
 # check if line is valid
 def isValidLine(line: list) -> bool:
-	id = str(line[0])
+	# id = str(line[0])
+	id = str(int(line[0]))
 	name = str(line[1]).replace(' ','')
 	age = int(line[2])
 	birth_year = int(line[3])
@@ -62,8 +63,8 @@ def printYoungestStudents(in_file_path: str, out_file_path: str, k: int) -> int:
 		return -1
 	
 	lines_list = linesFromFile(in_file_path)
-	sorted_lines = sorted(lines_list, key=lambda elem: (elem[2],elem[0]))
-
+	sorted_lines = sorted(lines_list, key=lambda elem: (int(elem[2]),int(elem[0])))
+	
 	write_file = open(out_file_path,'w')
 	for i , line in enumerate(sorted_lines):
 		if i == k:
