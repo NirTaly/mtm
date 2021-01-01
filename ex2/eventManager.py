@@ -26,7 +26,6 @@ def linesFromFile(orig_file_path: str) -> list:
 
 # check if line is valid
 def isValidLine(line: list) -> bool:
-	# id = str(line[0])
 	id = str(int(line[0]))
 	name = str(line[1]).replace(' ','')
 	age = int(line[2])
@@ -99,7 +98,6 @@ def correctAgeAvg(in_file_path: str, semester: int) -> float:
 #   events: list of dictionaries
 #   file_path: file path of the output file
 def printEventsList(events :list,file_path :str): #em, event_names: list, event_id_list: list, day: int, month: int, year: int):
-    # sorted_events = sorted(events, key=lambda event: event[2])
     dates = []
     for event in events:
         dates.append(event['date'])
