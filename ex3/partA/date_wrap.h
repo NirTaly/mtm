@@ -18,6 +18,7 @@ namespace mtm
 
 	const DateWrap operator+(int days, const DateWrap& date) throw(NegativeDays);
 	const DateWrap operator+(const DateWrap& date, int days) throw(NegativeDays);
+	std::ostream& operator<<(std::ostream& os, const DateWrap& date);
 
 	class DateWrap
 	{
@@ -37,8 +38,6 @@ namespace mtm
 		bool operator!=(const DateWrap& other) const;
 		bool operator>(const DateWrap& other)  const;
 		bool operator<(const DateWrap& other)  const;
-
-		friend std::ostream& operator<<(std::ostream& os, const DateWrap& date);
 
 	private:
 		int m_day;
