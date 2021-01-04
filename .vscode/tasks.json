@@ -4,9 +4,9 @@
 	  {
 		"type": "shell",
 		"label": "g++ build active file",
-		"command": "/usr/bin/gcc",
+		"command": "/usr/bin/g++",
 		// "args": ["-g", "-std=c99", "-pedantic-errors", "-Wall", "-Wextra", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
-		"args": ["-g", "-std=c99", "-pedantic-errors", "-Wall", "-Wextra", "${fileDirname}/*.c", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
+		"args": ["-g", "-std=c++11", "-pedantic-errors", "-Wall", "-Wextra", "${fileDirname}/*.cpp" ,"-L${fileDirname}/ -ldate", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
 		"options": {
 		  "cwd": "/usr/bin"
 		},

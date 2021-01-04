@@ -8,6 +8,24 @@ using std::endl;
 template <class T> void print(const T& x) { cout << x << endl; }
 
 int main() {
+    print("My Tests:");
+    try {
+        DateWrap bad_date(0, 0, 2020);  // InvalidDate
+        DateWrap bad_date2(bad_date);  // InvalidDate
+    } catch(const mtm::InvalidDate&) {
+        print("InvalidDate");
+    }
+    
+    DateWrap datedate(1, 1, 2020);
+    DateWrap date1(datedate);
+    date1 = (datedate = (1 + datedate + 1))++;          // date = 3/1/20 ... date1 = 4/1/20
+
+    DateWrap check_date(3,1,2020);
+    print (datedate);
+    print (date1);
+    cout << "op correct? " << std::boolalpha << ((date1 == check_date) && (datedate == (check_date+1))) << endl;
+    print("Finish My Tests\n");
+
     DateWrap date(30, 11, 2020);
     print(date);
     print(date + 4);

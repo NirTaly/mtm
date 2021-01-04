@@ -7,47 +7,78 @@
 
 #include "date_wrap.h"
 
-extern "C" 
-{
-	#include "date.h"
-}
-
 namespace mtm
 {
-	DateWrap::DateWrap(int day, int month, int year): 
-			m_day(day), m_month(month), m_year(year)
+	Date DateWrap::create(int day, int month, int year)
 	{
-		if (!(1 <= day <= 30 && 1 <= month <= 12))
+		Date date = dateCreate(day, month, year);
+		if (!date)
 		{
-			throw InvalidDate();
+			if (dateIsLegal(day, month))
+			{
+				throw (std::bad_alloc());
+			}
+			
+			throw (InvalidDate());
 		}
+
+		return (date);
 	}
 
-	DateWrap::DateWrap(const DateWrap& other):
-			m_day(other.day()), m_month(other.month()), m_year(other.year()) {}	// handle exception?
+	DateWrap::DateWrap(int day, int month, int year) throw(InvalidDate, std::bad_alloc) :
+			m_date(create(day, month, year))
+	{	}
 
-	DateWrap& DateWrap::operator=(const DateWrap& other) 						// handle exception
+	DateWrap::DateWrap(const DateWrap& other) throw(InvalidDate, std::bad_alloc):
+			m_date(create(other.day(), other.month(), other.year()))
+	{	}	
+
+	void DateWrap::swap(DateWrap& other)
 	{
-		m_day = other.day();
-		m_month = other.month();
-		m_year = other.year();
+		Date tmp = m_date;
+
+		m_date = other.m_date;
+
+		other.m_date = tmp;
+	}
+
+	DateWrap& DateWrap::operator=(const DateWrap& other) throw(InvalidDate, std::bad_alloc)
+	{
+		DateWrap tmp(other);
+
+		swap(tmp);
 
 		return (*this);
 	}	
 
+	DateWrap::~DateWrap()
+	{
+		dateDestroy(m_date);
+		m_date = NULL;
+	}
+
 	int DateWrap::day() const
 	{
-		return (m_day);
+		int day, month, year;
+		dateGet(m_date, &day, &month, &year);
+
+		return (day);
 	}
 	
 	int DateWrap::month() const
 	{
-		return (m_month);
+		int day, month, year;
+		dateGet(m_date, &day, &month, &year);
+
+		return (month);
 	}
 	
 	int DateWrap::year() const
 	{
-		return (m_year);
+		int day, month, year;
+		dateGet(m_date, &day, &month, &year);
+
+		return (year);
 	}
 
 	const DateWrap operator+(const DateWrap& date, int days) throw(NegativeDays)
@@ -56,12 +87,14 @@ namespace mtm
 		{
 			throw NegativeDays();
 		}
-		// BAD SOLUTION
+
 		DateWrap tmp(date);
 		while (days--)
 		{
 			tmp++;
 		}
+
+		return tmp;
 	}
 	const DateWrap operator+(int days, const DateWrap& date) throw(NegativeDays)
 	{
@@ -75,59 +108,46 @@ namespace mtm
 		return (*this);
 	}
 
-	DateWrap& DateWrap::operator++(int days)
+	DateWrap DateWrap::operator++(int)
 	{
-		if (dateIsLegal(m_day + 1, m_month))
-		{
-			m_day += 1;
-		}
-		else if (dateIsLegal(1, m_month + 1))
-		{
-			m_day = 1;
-			m_month += 1;
-		}
-		else
-		{
-			m_day = 1;
-			m_month = 1;
-			m_year += 1;
-		}
+		DateWrap tmp(*this); 
 
-		return (*this);
+		dateTick(m_date);
+
+		return (tmp); 
 	}
 
 	bool DateWrap::operator==(const DateWrap& other) const
 	{
-		return (m_day == other.day() && m_month == other.month() && m_year == other.year());
+		return (0 == dateCompare(m_date, other.m_date));
 	}
+
 	bool DateWrap::operator!=(const DateWrap& other) const
 	{
 		return !(*this == other);
 	}
 	bool DateWrap::operator>(const DateWrap& other)  const
 	{
-		if (m_year == other.year())
-		{
-			if (m_month == other.month())
-			{
-				return (m_day > other.day());
-			}
-			
-			return (m_month > other.month());
-		}
-		return (m_year > other.year());
+		return  (0 < dateCompare(m_date, other.m_date));
 	}
 	bool DateWrap::operator<(const DateWrap& other)  const
 	{
-		return !(*this > other || *this == other);
+		return (0 > dateCompare(m_date, other.m_date));
 	}
-
+	bool DateWrap::operator<=(const DateWrap& other)  const
+	{
+		return !(*this > other);
+	}
+	bool DateWrap::operator>=(const DateWrap& other)  const
+	{
+		return !(*this < other);
+	}
 	std::ostream& operator<<(std::ostream& os, const DateWrap& date)
 	{
-		return (os << date.day() << "/" << date.month() << "/" << date.year() << std::endl);
+		return (os << date.day() << "/" << date.month() << "/" << date.year());
 	}
 	
-	static bool dateIsLegal(int day, int month)
+	bool DateWrap::dateIsLegal(int day, int month) const
 	{
 		return (1 <= month && month <= 12 && 1 <= day && day <= 30);
 	}
