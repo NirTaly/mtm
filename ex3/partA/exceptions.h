@@ -1,9 +1,7 @@
 #ifndef __EXCEPTIONS_H__
 #define __EXCEPTIONS_H__
 
-// #include <exception>     /* std::runtime_error */
-#include <stdexcept>     /* std::runtime_error */
-#include <string>
+#include <stdexcept>     /* std::exception */
 
 namespace mtm
 {
@@ -13,6 +11,18 @@ namespace mtm
 
 	class NegativeDays : public Exception {};
 
+	class AlreadyRegistered : public Exception {};
+	
+	class RegistrationBlocked : public Exception {};
+
+	class NotRegistered : public Exception {};
+
+	class AlreadyInvited : public Exception {};
+
+	class PQEmpty : public Exception {};
+	
+	class PQNotFound : public Exception {};
+	
 } // namespace mtm
 
 #endif     /* __DATE_WRAP_H__ */

@@ -41,6 +41,8 @@
 		"type_traits": "cpp",
 		"utility": "cpp",
 		"typeinfo": "cpp",
-		"algorithm": "cpp"
+		"algorithm": "cpp",
+		"cstring": "cpp",
+		"cstddef": "cpp"
 	}
 }
