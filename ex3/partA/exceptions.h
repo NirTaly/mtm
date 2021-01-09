@@ -23,6 +23,8 @@ namespace mtm
 	
 	class PQNotFound : public Exception {};
 	
+	class NotSupported : public Exception {};
+	
 } // namespace mtm
 
 #endif     /* __DATE_WRAP_H__ */

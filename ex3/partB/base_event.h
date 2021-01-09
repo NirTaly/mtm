@@ -5,7 +5,7 @@
 
 #include "../partA/date_wrap.h"
 #include "../partA/exceptions.h"
-#include "dv.h"
+#include "pq.h"
 
 namespace mtm
 {
@@ -13,7 +13,7 @@ namespace mtm
 	{
 	public:
 		BaseEvent(const DateWrap& date, const std::string& name);
-		~BaseEvent() = default;
+		virtual ~BaseEvent() = default;
 		BaseEvent(const BaseEvent& other);
 		BaseEvent& operator=(const BaseEvent&) = delete;
 
@@ -25,10 +25,13 @@ namespace mtm
 
 		virtual BaseEvent* clone() = 0;
 
+		DateWrap date() const;
+		std::string name() const;
+		
 	private:
 		DateWrap m_date;
 		std::string m_name;
-		PriorityQueue<size_t, std::less> m_participants;
+		PriorityQueue<size_t, std::less<size_t>> m_participants;
 	};
 
 	BaseEvent::BaseEvent(const DateWrap& date, const std::string& name) :
@@ -63,12 +66,25 @@ namespace mtm
 	void BaseEvent::printLong(std::ostream& os)
 	{
 		printShort(os);
-		os << m_participants;									// ????????????
+		for (auto runner = pq.begin(); runner != pq.end(); runner = pq.next())
+		{
+			std::cout << *(runner->m_element);
+		}
 	}
 
 	BaseEvent::BaseEvent(const BaseEvent& other) : 
-			m_date(other.m_date), m_name(other.m_name), m_participants(other.m_participants)	// PQ(const& PQ)
+			m_date(other.m_date), m_name(other.m_name), m_participants(other.m_participants)
 	{	}
 
+	DateWrap BaseEvent::date() const
+	{
+		return m_date;
+	}
+	std::string BaseEvent::name() const;
+	{
+		return m_name;
+	}
+
 } // namespace mtm
+
 #endif     /* __BASE_EVENT_H__ */
