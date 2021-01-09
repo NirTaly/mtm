@@ -6,7 +6,6 @@
 #include "../partA/date_wrap.h"
 #include "../partA/exceptions.h"
 #include "base_event.h"
-#include "dv.h"
 
 namespace mtm
 {

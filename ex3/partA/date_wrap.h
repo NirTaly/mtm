@@ -8,7 +8,7 @@
 #ifndef __DATE_WRAP_H__
 #define __DATE_WRAP_H__
 
-#include <iostream>
+// #include <iostream>
 
 extern "C" 
 {

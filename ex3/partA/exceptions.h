@@ -25,6 +25,12 @@ namespace mtm
 	
 	class NotSupported : public Exception {};
 	
+	class DateMismatch : public Exception {};
+	
+	class InvalidNumber : public Exception {};
+	
+	class InvalidInterval : public Exception {};
+		
 } // namespace mtm
 
-#endif     /* __DATE_WRAP_H__ */
+#endif     /* __EXCEPTIONS_H__ */

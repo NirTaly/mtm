@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**"
+                // "${workspaceFolder}/ex3/*"
             ],
             "defines": [],
             "compilerPath": "/usr/bin//gcc",

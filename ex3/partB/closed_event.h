@@ -18,7 +18,7 @@ namespace mtm
 		ClosedEvent(const ClosedEvent&);
 		ClosedEvent& operator=(const ClosedEvent&) = delete;
 
-		void registerParticipant(size_t participant) throw(AlreadyRegiste, RegistrationBlocked) override;
+		void registerParticipant(size_t participant) throw(AlreadyRegistered, RegistrationBlocked) override;
 		
 		void addInvitee(size_t participant);
 
@@ -28,35 +28,6 @@ namespace mtm
 		DynamicVector<size_t> m_invitee;
 	};
 
-	ClosedEvent::ClosedEvent(const DateWrap& date, const std::string& name) :
-		BaseEvent(date, name), m_invitee()
-	{	}
-
-	ClosedEvent::ClosedEvent(const ClosedEvent& other) : BaseEvent(other), m_invitee(other.m_invitee)
-	{ }
-
-	void ClosedEvent::registerParticipant(size_t participant) throw(AlreadyRegistered, RegistrationBlocked) override
-	{
-		if (m_invitee[participant])
-		{
-			BaseEvent::registerParticipant(participant);
-		}
-	}
-
-	void addInvitee(size_t participant)
-	{
-		if (m_invitee[participant])
-		{
-			throw (AlreadyInvited());
-		}
-
-		m_invitee[participant] = true;
-	}
-
-	ClosedEvent* clone() override
-	{
-		return new ClosedEvent(*this);
-	}
 
 } // namespace mtm
 #endif     /* __CLOSED_EVENT_H__ */

@@ -31,59 +31,8 @@ namespace mtm
 	private:
 		DateWrap m_date;
 		std::string m_name;
-		PriorityQueue<size_t, std::less<size_t>> m_participants;
+		PriorityQueue <size_t, std::less<size_t>> m_participants;
 	};
-
-	BaseEvent::BaseEvent(const DateWrap& date, const std::string& name) :
-		m_date(date), m_name(name), m_participants()
-	{	}
-
-	virtual void BaseEvent::registerParticipant(size_t participant) throw(AlreadyRegistered)
-	{
-		if (m_participants.isIn(participant))
-		{
-			throw(AlreadyRegistered());
-		}
-
-		m_participants.push(participant);
-	}
-
-	void BaseEvent::unregisterParticipant(size_t participant) throw (NotRegistered)
-	{   
-		if (!m_participants.isIn(participant))
-		{
-			throw(NotRegistered());
-		}
-
-		m_participants.remove(participant);
-	}
-
-	void BaseEvent::printShort(std::ostream& os)
-	{
-		os << m_name << ' ' << m_date << std::endl;
-	}
-
-	void BaseEvent::printLong(std::ostream& os)
-	{
-		printShort(os);
-		for (auto runner = pq.begin(); runner != pq.end(); runner = pq.next())
-		{
-			std::cout << *(runner->m_element);
-		}
-	}
-
-	BaseEvent::BaseEvent(const BaseEvent& other) : 
-			m_date(other.m_date), m_name(other.m_name), m_participants(other.m_participants)
-	{	}
-
-	DateWrap BaseEvent::date() const
-	{
-		return m_date;
-	}
-	std::string BaseEvent::name() const;
-	{
-		return m_name;
-	}
 
 } // namespace mtm
 

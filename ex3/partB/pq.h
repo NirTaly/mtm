@@ -9,27 +9,6 @@ namespace mtm
 	class PriorityQueue final
 	{
 	public:
-		PriorityQueue();
-		~PriorityQueue();
-		PriorityQueue(const PriorityQueue<T, Compare>& other);
-		PriorityQueue<T, Compare>& operator=(const PriorityQueue<T, Compare>& other) = delete;
-
-		void push(const T& val);
-
-		void remove(const T& out_val);
-		
-		void pop();
-		
-		const Node* begin();
-		const Node* end();
-		const Node* next();
-		const Node* get();
-
-		bool isIn(const T& element) const;
-
-		bool isEmpty() const;
-		size_t size() const;
-
 		struct Node
 		{
 			Node()
@@ -48,6 +27,26 @@ namespace mtm
 			T* m_element;
 			Node* m_next;
 		};
+		PriorityQueue();
+		~PriorityQueue();
+		PriorityQueue(const PriorityQueue<T, Compare>& other);
+		PriorityQueue<T, Compare>& operator=(const PriorityQueue<T, Compare>& other) = delete;
+
+		void push(const T& val);
+
+		void remove(const T& out_val);
+		
+		void pop();
+		
+		Node* begin();
+		Node* end();
+		Node* next();
+		Node* get();
+
+		bool isIn(const T& element) const;
+
+		bool isEmpty() const;
+		size_t size() const;
 	private:
 		Node m_end;
 		Node m_start;
@@ -135,27 +134,27 @@ namespace mtm
 	}
 
 	template <class T, class Compare>
-	const Node* PriorityQueue<T,Compare>::begin()
+	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::begin()
 	{
 		m_iter = m_start.m_next;
 		return m_iter;
 	}
 	
 	template <class T, class Compare>
-	const Node* PriorityQueue<T,Compare>::end()
+	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::end()
 	{
 		return &m_end;
 	}
 
 	template <class T, class Compare>
-	const Node* PriorityQueue<T,Compare>::next()
+	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::next()
 	{
 		m_iter = m_iter->m_next;
 		return m_iter;
 	}
 	
 	template <class T, class Compare>
-	const Node* PriorityQueue<T,Compare>::get()
+	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::get()
 	{
 		return m_iter;
 	}
