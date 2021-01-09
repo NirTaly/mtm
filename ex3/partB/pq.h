@@ -11,7 +11,7 @@ namespace mtm
 	public:
 		PriorityQueue();
 		~PriorityQueue();
-		PriorityQueue(const PriorityQueue<T, Compare>& other) throw(std::bad_alloc);;
+		PriorityQueue(const PriorityQueue<T, Compare>& other) throw(std::bad_alloc);
 		PriorityQueue<T, Compare>& operator=(const PriorityQueue<T, Compare>& other) = delete;
 
 		void push(const T& val) throw(std::bad_alloc);
@@ -20,34 +20,26 @@ namespace mtm
 		
 		void pop() throw(PQEmpty);
 		
-		const T* begin() const;
-		const T* end() const;
-		const T* next() const;
+		const T& begin();
+		const T& end();
+		const T& next();
 
 		bool isIn(const T& element) const;
 
 		bool isEmpty() const;
 		size_t size() const;
-		
-		friend std::ostream& operator<<(std::ostream& os, const PriorityQueue& date);
-	private:
-		struct Node;
 
+	private:
+	
 		struct Node
-        {
-			Node(Node* next = nullptr): m_element(nullptr), m_next(next) 
+		{
+			Node(const T& element = 0, Node* next = nullptr) : m_element(element), m_next(next)
 			{ }
 
-            T* m_element;
-            Node* m_next;
-        };
+			T m_element;
+			Node* m_next;
+		};
 
-		void destroy(Node* node)
-		{
-			delete node->m_element;
-			delete node;
-		}
-		
 		Node m_end;
 		Node m_start;
 		Node* m_iter;
@@ -56,7 +48,7 @@ namespace mtm
 	/******************************************************************************/
 	/******************************************************************************/
 	template <class T, class Compare>
-	PriorityQueue<T,Compare>::PriorityQueue() : m_start(&m_end), m_iter(nullptr) { }
+	PriorityQueue<T,Compare>::PriorityQueue() : m_start(0, &m_end), m_iter(nullptr) { }
 	
 	template <class T, class Compare>
 	PriorityQueue<T,Compare>::~PriorityQueue()
@@ -70,9 +62,9 @@ namespace mtm
 	template <class T, class Compare>
 	PriorityQueue<T,Compare>::PriorityQueue(const PriorityQueue<T, Compare>& other) throw(std::bad_alloc)
 	{
-		for (T* runner = other.begin(); runner != other.end(); runner = other.next())
+		for (T runner = other.begin(); runner != other.end(); runner = other.next())
 		{
-			push(*runner);
+			push(runner);
 		}
 	}
 
@@ -82,16 +74,15 @@ namespace mtm
 		PriorityQueue<T,Compare>::Node* runner = &m_start;
 		for (; runner->m_next != &m_end; runner = runner->m_next)
 		{
-			if (Compare(val, *(runner->m_next)))
+			if (Compare(val, runner->m_next->m_element))
 			{
 				break;
 			}
 		}
 
-		PriorityQueue<T,Compare>::Node* inserted = new PriorityQueue<T,Compare>::Node(runner->m_next);
-		inserted->m_element = new T(val);
-		runner->m_next = inserted;
+		PriorityQueue<T,Compare>::Node* inserted = new PriorityQueue<T,Compare>::Node(val,runner->m_next);
 		
+		runner->m_next = inserted;
 	}
 
 	template <class T, class Compare>
@@ -100,16 +91,18 @@ namespace mtm
 		PriorityQueue<T,Compare>::Node* runner = &m_start;
 		for (; runner->m_next != &m_end; runner = runner->m_next)
 		{
-			if (*(runner->m_next) == out_val)
+			if (runner->m_next->m_element == out_val)
 			{
 				PriorityQueue<T,Compare>::Node* destroy_node = runner->m_next;
 				runner->m_next = destroy_node->m_next;
 
-				destroy(destroy_node);
+				delete destroy_node;
+
+				return;
 			}
 		}
 
-		throw (PQNotFound())			//probably NotRegistered for student unregister
+		throw (PQNotFound());			//probably NotRegistered for student unregister
 	}
 
 	template <class T, class Compare>
@@ -117,31 +110,31 @@ namespace mtm
 	{
 		if (isEmpty())
 		{
-			throw (PQEmpty)
+			throw (PQEmpty());
 		}
 
 		PriorityQueue<T,Compare>::Node* destroy_node = m_start.m_next;
 		
 		m_start.m_next = destroy_node->m_next;
 
-		destroy(destroy_node);
+		delete destroy_node;
 	}
 
 	template <class T, class Compare>
-	const T* PriorityQueue<T,Compare>::begin() const
+	const T& PriorityQueue<T,Compare>::begin()
 	{
 		m_iter = m_start.m_next;
 		return m_start.m_next->m_element;
 	}
 	
 	template <class T, class Compare>
-	const T* PriorityQueue<T,Compare>::end() const
+	const T& PriorityQueue<T,Compare>::end()
 	{
 		return m_end.m_element;
 	}
 
 	template <class T, class Compare>
-	const T* PriorityQueue<T,Compare>::next() const
+	const T& PriorityQueue<T,Compare>::next()
 	{
 		m_iter = m_iter->m_next;
 		return m_iter->m_element;
@@ -150,21 +143,22 @@ namespace mtm
 	template <class T, class Compare>
 	bool PriorityQueue<T,Compare>::isIn(const T& element) const
 	{
-		PriorityQueue<T,Compare>::Node* runner = &m_start;
+		const PriorityQueue<T,Compare>::Node* runner = &m_start;
 		for (; runner->m_next != &m_end; runner = runner->m_next)
 		{
-			if (*(runner->m_next) == element)
+			if (runner->m_next->m_element == element)
 			{
 				return true;
 			}
-			return false;
 		}
+		
+		return false;
 	}
 
 	template <class T, class Compare>
 	bool PriorityQueue<T,Compare>::isEmpty() const
 	{
-		return m_start.next == &m_end;
+		return m_start.m_next == &m_end;
 	}
 
 
@@ -177,18 +171,10 @@ namespace mtm
 		{
 			count++;
 		}
+
 		return count;
 	}
-	
-	template <class T, class Compare>
-	std::ostream& operator<<(std::ostream& os, const PriorityQueue<T,Compare>& date)
-	{
-		PriorityQueue<T,Compare>::Node* runner = m_start.m_next;
-		for (; runner != m_end; runner = rummer->m_next)
-		{
-			os << runner->m_element;
-		}
-	}
+
 }
 
 #endif     /* __PQ_H__ */
