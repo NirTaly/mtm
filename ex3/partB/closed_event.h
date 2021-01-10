@@ -25,7 +25,7 @@ namespace mtm
 		ClosedEvent* clone() const override;
 	
 	private:
-		PriorityQueue <size_t, std::less<size_t>> m_invitee;
+		PriorityQueue <size_t, IDCompare> m_invitee;
 	};
 
 

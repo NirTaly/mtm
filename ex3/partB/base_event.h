@@ -28,10 +28,18 @@ namespace mtm
 		DateWrap date() const;
 		std::string name() const;
 		
+		struct IDCompare
+		{
+			bool operator()(size_t a, size_t b) const
+			{
+				return (a < b);
+			}
+		};
 	private:
 		DateWrap m_date;
 		std::string m_name;
-		PriorityQueue <size_t, std::less<size_t>> m_participants;
+
+		PriorityQueue <size_t, IDCompare> m_participants;
 	};
 
 } // namespace mtm

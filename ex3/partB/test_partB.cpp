@@ -68,13 +68,42 @@ void test2() {
     test2_aux(custom);
 }
 
+void test3() {
+    // assume `ec` in an EventContainer with 2 events
+    mtm::Festival festival(mtm::DateWrap(21, 10, 2020));
+    festival.add(mtm::OpenEvent(mtm::DateWrap(21, 10, 2020), "Fest 1"));
+    festival.add(mtm::OpenEvent(mtm::DateWrap(21, 10, 2020), "Fest 2"));
+    try
+    {
+        festival.add(mtm::OpenEvent(mtm::DateWrap(14, 12, 2020), "WHATT"));
+    } catch(const mtm::DateMismatch& e) {
+        std::cerr << "DateMismatch" << '\n';
+    }
+    
+    mtm::EventContainer::EventIterator it = festival.begin();
+    mtm::EventContainer::EventIterator it_end = festival.end();
+    mtm::BaseEvent& ev = *it;                                                   // `ev` is the first event stored in `ec`
+    ev.printShort(std::cout);                                                   // print short description of 1st event
+    (*it).printShort(std::cout);                                                // same output as previous line
+    ++it;
+    (*it).printShort(std::cout);                                                // print short description of 2nd event
+    std::cout << std::boolalpha << (it == it_end) << std::endl;                 // print "0"
+    std::cout << std::boolalpha << (it != it_end) << std::endl;                 // print "1"
+    ++it;
+    std::cout << std::boolalpha << (it == it_end)  << std::endl;                // print "1"
+    std::cout << std::boolalpha << (it != it_end)  << std::endl;                // print "0"
+}
+
+
 typedef void (*Test)();
-const Test tests[] = {test1, test2};
+const Test tests[] = {test1, test2, test3};
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        test1();
-        test2();
+        for (auto test : tests)
+        {
+            test();
+        }
     } else if (argc > 2) {
         std::cout << "invalid arguments" << std::endl;
     } else {
