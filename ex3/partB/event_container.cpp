@@ -2,18 +2,11 @@
 
 namespace mtm
 {
-
 	EventContainer::~EventContainer()	{ }
 
 	void EventContainer::add(const BaseEvent& event)
-	{
-		// BaseEvent* clone = event.clone();
-		
-		// m_event_pq.push(clone);
-		
-		// delete clone;
-		
-		m_event_pq.push(event.clone());
+	{	
+		m_event_pq.push(BaseEventWrap(event));
 	}
  
 	EventContainer::EventIterator EventContainer::begin()
@@ -40,7 +33,7 @@ namespace mtm
 	
 	BaseEvent& EventContainer::EventIterator::operator*()
 	{
-		return **(m_iter->m_element);
+		return *(m_iter->m_element->m_event);
 	}
 
 	EventContainer::EventIterator EventContainer::EventIterator::operator++()

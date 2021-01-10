@@ -37,7 +37,6 @@ namespace mtm
         (void) event;
         throw NotSupported();
     }
-
 }
 
 #endif     /* __ONE_TIME_EVENT_H__ */

@@ -7,11 +7,21 @@
 
 namespace mtm
 {
+	struct BaseEventWrap
+	{
+		BaseEventWrap(const BaseEvent& event) : m_event(event.clone()) { }
+		BaseEventWrap(const BaseEventWrap& other) : m_event(other.m_event->clone()) { }
+		~BaseEventWrap() {
+			delete m_event;
+		}
+		BaseEvent* m_event;	
+	};
+
 	struct EventCompare
 	{
-		bool operator()(const BaseEvent* a, const BaseEvent* b) const
+		bool operator()(const BaseEventWrap& a, const BaseEventWrap& b) const
 		{
-			return (a->date() < b->date());
+			return (a.m_event->date() < b.m_event->date());
 		}
 	};
 
@@ -21,7 +31,7 @@ namespace mtm
 		class EventIterator
 		{
 		public:
-			EventIterator(PriorityQueue<BaseEvent*, EventCompare>::Node* iter = nullptr) : m_iter(iter) { }
+			EventIterator(PriorityQueue<BaseEventWrap, EventCompare>::Node* iter = nullptr) : m_iter(iter) { }
 			~EventIterator() = default;
 			EventIterator(const EventIterator& other);
 			EventIterator& operator=(const EventIterator&);
@@ -32,18 +42,7 @@ namespace mtm
 			bool operator!=(const EventIterator& other) const;
 
 		private:
-			class BaseEventWrap
-			{
-			public:
-				BaseEventWrap(const BaseEvent& event) : m_event(event.clone()) { }
-				~BaseEventWrap() {
-					delete m_event;
-				}
-			private:
-				BaseEvent* m_event;	
-			}
-			
-			PriorityQueue<BaseEvent*, EventCompare>::Node* m_iter;
+			PriorityQueue<BaseEventWrap, EventCompare>::Node* m_iter;
 		};
 	/***************************************************************************/
 		EventContainer() = default;
@@ -60,7 +59,8 @@ namespace mtm
 
 	
 	private:
-		PriorityQueue <BaseEvent*, EventCompare> m_event_pq;
+		
+		PriorityQueue <BaseEventWrap, EventCompare> m_event_pq;
 		EventIterator m_event_iter;
 	};
 
