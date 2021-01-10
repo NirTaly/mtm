@@ -43,6 +43,7 @@
 		"typeinfo": "cpp",
 		"algorithm": "cpp",
 		"cstring": "cpp",
-		"cstddef": "cpp"
+		"cstddef": "cpp",
+		"queue": "cpp"
 	}
 }

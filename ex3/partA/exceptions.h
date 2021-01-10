@@ -30,6 +30,11 @@ namespace mtm
 	class InvalidNumber : public Exception {};
 	
 	class InvalidInterval : public Exception {};
+	
+	class EventAlreadyExists : public Exception {};
+	
+	class EventDoesNotExit : public Exception {};
+	
 		
 } // namespace mtm
 

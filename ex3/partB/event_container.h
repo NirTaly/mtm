@@ -21,6 +21,11 @@ namespace mtm
 	{
 		bool operator()(const BaseEventWrap& a, const BaseEventWrap& b) const
 		{
+			if (a.m_event->date() == b.m_event->date())
+			{
+				return ((a.m_event->name()).compare(b.m_event->name()))
+			}
+			
 			return (a.m_event->date() < b.m_event->date());
 		}
 	};
