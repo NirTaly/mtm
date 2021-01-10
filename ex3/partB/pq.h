@@ -27,6 +27,7 @@ namespace mtm
 			T* m_element;
 			Node* m_next;
 		};
+		
 		PriorityQueue();
 		~PriorityQueue();
 		PriorityQueue(const PriorityQueue<T, Compare>& other);
@@ -74,10 +75,10 @@ namespace mtm
 	PriorityQueue<T,Compare>::PriorityQueue(const PriorityQueue<T, Compare>& other) : m_iter(other.m_iter)
 	{
 		m_start.m_next = &m_end;
-
-		for (auto runner = other.begin(); runner != other.end(); runner = other.next())
+		PriorityQueue<T,Compare>::Node* runner = other.m_start.m_next;
+		for (; runner != &(other.m_end); runner = runner->m_next)
 		{
-			push(*(runner->element));
+			push(*(runner->m_element));
 		}
 	}
 
@@ -193,7 +194,6 @@ namespace mtm
 
 		return count;
 	}
-
 }
 
 #endif     /* __PQ_H__ */

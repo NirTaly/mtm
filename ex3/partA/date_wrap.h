@@ -8,14 +8,14 @@
 #ifndef __DATE_WRAP_H__
 #define __DATE_WRAP_H__
 
-// #include <iostream>
+#include <iostream>
+#include "exceptions.h"
 
 extern "C" 
 {
 	#include "date.h"
 }
 
-#include "exceptions.h"
 
 namespace mtm
 {

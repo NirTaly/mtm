@@ -23,7 +23,7 @@ namespace mtm
 		void printShort(std::ostream& os);
 		void printLong(std::ostream& os);
 
-		virtual BaseEvent* clone() = 0;
+		virtual BaseEvent* clone() const = 0;
 
 		DateWrap date() const;
 		std::string name() const;

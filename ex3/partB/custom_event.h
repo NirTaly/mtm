@@ -13,36 +13,38 @@ namespace mtm
 	class CustomEvent : public BaseEvent
 	{
 	public:
-		CustomEvent(const DateWrap& date, const std::string& name);
+		CustomEvent(const DateWrap& date, const std::string& name, CanRegister function);
 		~CustomEvent() = default;
 		CustomEvent(const CustomEvent&);
 		CustomEvent& operator=(const CustomEvent&) = delete;
 
-		void registerParticipant(size_t participant) throw(AlreadyRegiste, RegistrationBlocked) override;
+		void registerParticipant(size_t participant) throw(AlreadyRegistered, RegistrationBlocked) override;
 		
-		CustomEvent* clone() override;
+		CustomEvent* clone() const override;
+	private:
+		CanRegister m_function;
 	};
 
 	template <class CanRegister>
-	CustomEvent::CustomEvent(const DateWrap& date, const std::string& name) :
-		BaseEvent(date, name)
+	CustomEvent<CanRegister>::CustomEvent(const DateWrap& date, const std::string& name, CanRegister function) :
+		BaseEvent(date, name), m_function(function)
 	{	}
 
 	template <class CanRegister>
-	CustomEvent::CustomEvent(const CustomEvent& other) : BaseEvent(other)
+	CustomEvent<CanRegister>::CustomEvent(const CustomEvent& other) : BaseEvent(other), m_function(other.m_function)
 	{ }
 
 	template <class CanRegister>
-	void CustomEvent::registerParticipant(size_t participant) throw(AlreadyRegistered, RegistrationBlocked) override
+	void CustomEvent<CanRegister>::registerParticipant(size_t participant) throw(AlreadyRegistered, RegistrationBlocked)
 	{
-		if (CanRegister(participant))
+		if (m_function(participant))
 		{
 			BaseEvent::registerParticipant(participant);
 		}
 	}
 
 	template <class CanRegister>
-	CustomEvent* clone() override
+	CustomEvent<CanRegister>* CustomEvent<CanRegister>::clone() const
 	{
 		return new CustomEvent(*this);
 	}

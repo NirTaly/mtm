@@ -6,7 +6,7 @@
 #include "../partA/date_wrap.h"
 #include "../partA/exceptions.h"
 #include "base_event.h"
-#include "dv.h"
+#include "pq.h"
 
 namespace mtm
 {
@@ -22,10 +22,10 @@ namespace mtm
 		
 		void addInvitee(size_t participant);
 
-		ClosedEvent* clone() override;
+		ClosedEvent* clone() const override;
 	
 	private:
-		DynamicVector<size_t> m_invitee;
+		PriorityQueue <size_t, std::less<size_t>> m_invitee;
 	};
 
 

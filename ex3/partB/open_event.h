@@ -12,12 +12,12 @@ namespace mtm
 	class OpenEvent : public BaseEvent
 	{
 	public:
-		OpenEvent(const DateWrap& date, const std::string& name): BaseEvent(date, name)
+		OpenEvent(const DateWrap& date, const std::string& name) : BaseEvent(date, name) { }
 		~OpenEvent() = default;
-		OpenEvent(const OpenEvent& other) : BaseEvent(other);
+		OpenEvent(const OpenEvent& other) : BaseEvent(other) { }
 		OpenEvent& operator=(const OpenEvent&) = delete;
 
-		OpenEvent* clone() override
+		OpenEvent* clone() const override
 		{
 			return new OpenEvent(*this);
 		}

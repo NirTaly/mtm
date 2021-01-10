@@ -9,9 +9,9 @@ namespace mtm
 {
 	struct EventCompare
 	{
-		bool operator()(const BaseEvent& a, const BaseEvent& b) const
+		bool operator()(const BaseEvent* a, const BaseEvent* b) const
 		{
-			return (a.date() < b.date());
+			return (a->date() < b->date());
 		}
 	};
 
@@ -21,7 +21,7 @@ namespace mtm
 		class EventIterator
 		{
 		public:
-			EventIterator(PriorityQueue<BaseEvent, EventCompare>::Node* iter = nullptr) : m_iter(iter) { }
+			EventIterator(PriorityQueue<BaseEvent*, EventCompare>::Node* iter = nullptr) : m_iter(iter) { }
 			~EventIterator() = default;
 			EventIterator(const EventIterator& other);
 			EventIterator& operator=(const EventIterator&);
@@ -32,21 +32,35 @@ namespace mtm
 			bool operator!=(const EventIterator& other) const;
 
 		private:
-			PriorityQueue<BaseEvent, EventCompare>::Node* m_iter;
+			class BaseEventWrap
+			{
+			public:
+				BaseEventWrap(const BaseEvent& event) : m_event(event.clone()) { }
+				~BaseEventWrap() {
+					delete m_event;
+				}
+			private:
+				BaseEvent* m_event;	
+			}
+			
+			PriorityQueue<BaseEvent*, EventCompare>::Node* m_iter;
 		};
 	/***************************************************************************/
 		EventContainer() = default;
 	
 		virtual ~EventContainer() = 0;
 
-		virtual void add(const BaseEvent& event);
+		EventContainer(const EventContainer&) = delete;
+		EventContainer& operator=(const EventContainer&) = delete;
+		
+		virtual void add (const BaseEvent& event);
 	
 		EventIterator begin();
 		EventIterator end();
 
 	
 	private:
-		PriorityQueue <BaseEvent, EventCompare> m_event_pq;
+		PriorityQueue <BaseEvent*, EventCompare> m_event_pq;
 		EventIterator m_event_iter;
 	};
 
