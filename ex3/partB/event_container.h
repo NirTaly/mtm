@@ -11,8 +11,14 @@ namespace mtm
 	{
 		BaseEventWrap(const BaseEvent& event) : m_event(event.clone()) { }
 		BaseEventWrap(const BaseEventWrap& other) : m_event(other.m_event->clone()) { }
-		~BaseEventWrap() {
+		~BaseEventWrap()
+		{
 			delete m_event;
+		}
+		bool operator==(const BaseEventWrap& other)
+		{
+			return ((m_event->date() == other.m_event->date()) && 
+					(m_event->name().compare(other.m_event->name()) == 0));
 		}
 		BaseEvent* m_event;	
 	};
@@ -23,7 +29,7 @@ namespace mtm
 		{
 			if (a.m_event->date() == b.m_event->date())
 			{
-				return ((a.m_event->name()).compare(b.m_event->name()))
+				return ((a.m_event->name()).compare(b.m_event->name()) < 0);
 			}
 			
 			return (a.m_event->date() < b.m_event->date());
@@ -59,8 +65,8 @@ namespace mtm
 		
 		virtual void add (const BaseEvent& event);
 	
-		EventIterator begin();
-		EventIterator end();
+		EventIterator begin() const;
+		EventIterator end() const;
 
 	
 	private:

@@ -18,7 +18,7 @@ namespace mtm
 			}
 			Node(const T& element, Node* next = nullptr) : m_element(new T(element)), m_next(next)
 			{ }
-
+			
 			~Node()
 			{
 				delete m_element;
@@ -39,25 +39,24 @@ namespace mtm
 		
 		void pop();
 		
-		Node* begin();
-		Node* end();
-		Node* next();
-		Node* get();
+		Node* begin() const;
+		Node* end() const;
 
 		bool isIn(const T& element) const;
 
 		bool isEmpty() const;
 		size_t size() const;
+
+		void print(std::ostream& os);
 	private:
 		Node m_end;
 		Node m_start;
-		Node* m_iter;
 	};
 
 	/******************************************************************************/
 	/******************************************************************************/
 	template <class T, class Compare>
-	PriorityQueue<T,Compare>::PriorityQueue() : m_iter(nullptr) 
+	PriorityQueue<T,Compare>::PriorityQueue() 
 	{ 
 		m_start.m_next = &m_end;
 	}
@@ -72,7 +71,7 @@ namespace mtm
 	}
 
 	template <class T, class Compare>
-	PriorityQueue<T,Compare>::PriorityQueue(const PriorityQueue<T, Compare>& other) : m_iter(other.m_iter)
+	PriorityQueue<T,Compare>::PriorityQueue(const PriorityQueue<T, Compare>& other)
 	{
 		m_start.m_next = &m_end;
 		PriorityQueue<T,Compare>::Node* runner = other.m_start.m_next;
@@ -135,29 +134,15 @@ namespace mtm
 	}
 
 	template <class T, class Compare>
-	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::begin()
+	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::begin() const
 	{
-		m_iter = m_start.m_next;
-		return m_iter;
+		return m_start.m_next;
 	}
 	
 	template <class T, class Compare>
-	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::end()
+	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::end() const
 	{
-		return &m_end;
-	}
-
-	template <class T, class Compare>
-	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::next()
-	{
-		m_iter = m_iter->m_next;
-		return m_iter;
-	}
-	
-	template <class T, class Compare>
-	typename PriorityQueue<T,Compare>::Node* PriorityQueue<T,Compare>::get()
-	{
-		return m_iter;
+		return const_cast<PriorityQueue<T, Compare>::Node*>(&m_end);
 	}
 
 	template <class T, class Compare>
@@ -193,6 +178,15 @@ namespace mtm
 		}
 
 		return count;
+	}
+
+	template <class T, class Compare>
+	void PriorityQueue<T,Compare>::print(std::ostream& os)
+	{
+		for (auto runner = m_start.m_next; runner != &m_end; runner = runner->m_next)
+		{
+			os << *(runner->m_element) << std::endl;
+		}
 	}
 }
 

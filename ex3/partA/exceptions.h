@@ -33,7 +33,7 @@ namespace mtm
 	
 	class EventAlreadyExists : public Exception {};
 	
-	class EventDoesNotExit : public Exception {};
+	class EventDoesNotExist : public Exception {};
 	
 		
 } // namespace mtm

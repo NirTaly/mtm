@@ -40,10 +40,9 @@ namespace mtm
 	void BaseEvent::printLong(std::ostream& os)
 	{
 		printShort(os);
-		for (auto runner = m_participants.begin(); runner != m_participants.end(); runner = m_participants.next())
-		{
-			std::cout << *(runner->m_element) << std::endl;
-		}
+		
+		m_participants.print(os);
+		
 	}
 
 	DateWrap BaseEvent::date() const

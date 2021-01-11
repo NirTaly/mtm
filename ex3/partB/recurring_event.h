@@ -55,7 +55,7 @@ namespace mtm
 	}
 
 	template <class EventType>
-    void RecurringEvent<EventType>::add(const BaseEvent& event) throw(NotSupported)	//waiting for piazza
+    void RecurringEvent<EventType>::add(const BaseEvent& event) throw(NotSupported)
     {
         (void) event;
         throw NotSupported();

@@ -9,12 +9,12 @@ namespace mtm
 		m_event_pq.push(BaseEventWrap(event));
 	}
  
-	EventContainer::EventIterator EventContainer::begin()
+	EventContainer::EventIterator EventContainer::begin() const
 	{
 		return EventContainer::EventIterator(m_event_pq.begin());
 	}
 	
-	EventContainer::EventIterator EventContainer::end()
+	EventContainer::EventIterator EventContainer::end() const
 	{
 		return EventContainer::EventIterator(m_event_pq.end());
 	}

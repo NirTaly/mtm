@@ -3,7 +3,6 @@
 
 #include <string>
 #include <functional>
-#include <queue>
 
 #include "../partA/exceptions.h"
 #include "../partA/date_wrap.h"
@@ -14,38 +13,34 @@ namespace mtm
     class Schedule
     {
     public:
-        Schedule();
-        ~Schedule();
+        Schedule() = default;
+        ~Schedule() = default;
+        
+        Schedule(const Schedule& schedule) = delete;
+        Schedule& operator=(const Schedule&) = delete;
 
-        Schedule(const Schedule& schedule);
-        Schedule& operator=() = delete;
+        void addEvents(const EventContainer& event_container) throw(EventAlreadyExists);
 
-        addEvents(const EventContainer& event) throw( EventAlreadyExists);
+        void registerToEvent(const DateWrap& date, const std::string name, int student) 
+            throw(AlreadyRegistered, RegistrationBlocked, EventDoesNotExist);
 
-        registerToEvent(const DateWrap& date, const std::string name, int student) 
-            throw(AlreadyRegistered, RegistertionBlocked, EventDoesNotExit);
-
-        unRegisterFromEvent(const DateWrap& date, const std::string name, int student)
+        void unregisterFromEvent(const DateWrap& date, const std::string name, int student)
             throw(NotRegistered, EventDoesNotExist);
 
-        printAllEvents();
+        void printAllEvents() const;
 
-        printMonthEvents(int month, int year);
+        void printMonthEvents(int month, int year) const;
 
-		printSomeEvents(Predicate func, bool verbose = false)
+		void printSomeEvents(std::function<bool(const BaseEvent&)> predicate, bool verbose = false) const;
         
-        printEventDetail(const std::string& name,const DateWrap& date) throw(EventDoesNotExist);
+        void printEventDetails(const DateWrap& date, const std::string& name) const throw(EventDoesNotExist);
+
 
     private:
-		std::priority_queue<BaseEventWrap, std::vector<BaseEventWrap>, EventCompare> m_pq;
-    }   
+        // void foreach(std::function <void (PriorityQueue<BaseEventWrap,EventCompare>::Node*)>);
 
-
-    
-
-
-
+		PriorityQueue <BaseEventWrap, EventCompare> m_schedule;
+    };
 }
 
 #endif     /* __SCHEDUELE_H__ */
-

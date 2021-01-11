@@ -1,13 +1,13 @@
-#include "base_event.h"
-#include "closed_event.h"
-#include "custom_event.h"
-#include "date_wrap.h"
-#include "event_container.h"
-#include "exceptions.h"
-#include "festival.h"
-#include "one_time_event.h"
-#include "open_event.h"
-#include "recurring_event.h"
+#include "../partB/base_event.h"
+#include "../partB/closed_event.h"
+#include "../partB/custom_event.h"
+#include "../partA/date_wrap.h"
+#include "../partB/event_container.h"
+#include "../partA/exceptions.h"
+#include "../partB/festival.h"
+#include "../partB/one_time_event.h"
+#include "../partB/open_event.h"
+#include "../partB/recurring_event.h"
 #include "schedule.h"
 #include <cstdlib>
 #include <iostream>
@@ -22,13 +22,14 @@ void test3(const mtm::Schedule& schedule) {
     schedule.printEventDetails(mtm::DateWrap(5, 1, 2021), "Update Q&A");
 }
 
-void test4(const mtm::Schedule& schedule) { schedule.printMonthEvents(12); }
+void test4(const mtm::Schedule& schedule) { schedule.printMonthEvents(12, 2020); }
 
 class MutatingPredicate {
     int counter = 0;
 
 public:
     bool operator()(const mtm::BaseEvent& event) {
+        (void)event;
         ++counter;
         return true;
     }
