@@ -12,8 +12,11 @@ namespace mtm
 			m_date(other.m_date), m_name(other.m_name), m_participants(other.m_participants)
 	{	}
 
-	void BaseEvent::registerParticipant(size_t participant) throw(AlreadyRegistered, RegistrationBlocked)
+	void BaseEvent::registerParticipant(size_t participant) 
+								throw(InvalidStudent, AlreadyRegistered, RegistrationBlocked)
 	{
+		studentIsLegal(participant);
+
 		if (m_participants.isIn(participant))
 		{
 			throw(AlreadyRegistered());
@@ -22,8 +25,10 @@ namespace mtm
 		m_participants.push(participant);
 	}
 
-	void BaseEvent::unregisterParticipant(size_t participant) throw (NotRegistered)
+	void BaseEvent::unregisterParticipant(size_t participant) throw (InvalidStudent, NotRegistered)
 	{   
+		studentIsLegal(participant);
+		
 		if (!m_participants.isIn(participant))
 		{
 			throw(NotRegistered());
@@ -55,4 +60,11 @@ namespace mtm
 		return m_name;
 	}
 
+	void BaseEvent::studentIsLegal(size_t student)
+	{
+		if (student < 1 || student > 1234567890)
+		{
+			throw InvalidStudent();
+		}
+	}
 } // namespace mtm

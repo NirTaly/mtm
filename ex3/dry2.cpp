@@ -1,6 +1,8 @@
 #include <vector>
 #include <iostream>
 
+class BadInput : public std::exception {};
+
 template <class T>
 std::vector<T> slice(std::vector<T> vec, int start, int step, int stop) throw(BadInput)
 {   
@@ -23,23 +25,53 @@ std::vector<T> slice(std::vector<T> vec, int start, int step, int stop) throw(Ba
 
     return new_vec;
 }
-
+/******************************************************************************/
 class A 
 {
 public:
-	std::vector<int*> operator=(const std::vector<int*>& vec)
+	class Vector
 	{
-		std::vector<int*> tmp;
-		for (auto p_i : vec)
+	public:
+		
+		Vector() = default;
+		Vector(std::vector<int*> vec)
 		{
-			tmp.push_back(new int(*p_i));
+			for (auto iter : vec) {
+				m_vec.push_back(new int(*iter));
+			}
 		}
-		
-		
-	}
+		~Vector()
+		{
+			for (auto iter : m_vec) {
+				delete iter;
+			}
+		}
+		Vector& operator=(const Vector& other)
+		{
+			for (auto iter : m_vec) {
+				delete iter;
+			}
+			m_vec.clear();
 
-	std::vector<int*> values;
-	void add(int x) { values.push_back(new int(x)); }
+			for (auto iter : other.m_vec) {
+				m_vec.push_back(new int(*iter));
+			}
+			return *this;
+		}
+		int* operator[](int num)
+		{
+			return m_vec[num];
+		}
+		operator const std::vector<int*>&()
+		{
+			return m_vec;
+		}
+
+		std::vector<int*> m_vec;
+	};
+
+	Vector values;
+	void add(int x) { values.m_vec.push_back(new int(x)); }
 };
 
 int main() 

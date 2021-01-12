@@ -17,8 +17,9 @@ namespace mtm
 		BaseEvent(const BaseEvent& other);
 		BaseEvent& operator=(const BaseEvent&) = delete;
 
-		virtual void registerParticipant(size_t participant) throw(AlreadyRegistered, RegistrationBlocked);
-		void unregisterParticipant(size_t participant) throw (NotRegistered);
+		virtual void registerParticipant(size_t participant) 
+								throw(InvalidStudent, AlreadyRegistered, RegistrationBlocked);
+		void unregisterParticipant(size_t participant) throw (InvalidStudent, NotRegistered);
 		
 		void printShort(std::ostream& os);
 		void printLong(std::ostream& os);
@@ -27,6 +28,8 @@ namespace mtm
 
 		DateWrap date() const;
 		std::string name() const;
+		
+		void studentIsLegal(size_t student);
 		
 		struct IDCompare
 		{

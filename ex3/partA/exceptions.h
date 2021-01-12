@@ -1,7 +1,7 @@
 #ifndef __EXCEPTIONS_H__
 #define __EXCEPTIONS_H__
 
-#include <stdexcept>     /* std::exception */
+#include <exception>     /* std::exception */
 
 namespace mtm
 {
@@ -10,6 +10,8 @@ namespace mtm
 	class InvalidDate : public Exception {};
 
 	class NegativeDays : public Exception {};
+	
+	class InvalidStudent : public Exception {};
 
 	class AlreadyRegistered : public Exception {};
 	
@@ -34,7 +36,6 @@ namespace mtm
 	class EventAlreadyExists : public Exception {};
 	
 	class EventDoesNotExist : public Exception {};
-	
 		
 } // namespace mtm
 

@@ -21,11 +21,11 @@ namespace mtm
 
         void addEvents(const EventContainer& event_container) throw(EventAlreadyExists);
 
-        void registerToEvent(const DateWrap& date, const std::string name, int student) 
-            throw(AlreadyRegistered, RegistrationBlocked, EventDoesNotExist);
+        void registerToEvent(const DateWrap& date, const std::string name, size_t student) 
+            throw(AlreadyRegistered, RegistrationBlocked, EventDoesNotExist, InvalidStudent);
 
-        void unregisterFromEvent(const DateWrap& date, const std::string name, int student)
-            throw(NotRegistered, EventDoesNotExist);
+        void unregisterFromEvent(const DateWrap& date, const std::string name, size_t student)
+            throw(NotRegistered, EventDoesNotExist, InvalidStudent);
 
         void printAllEvents() const;
 

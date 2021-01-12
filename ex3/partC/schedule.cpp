@@ -19,8 +19,8 @@ namespace mtm
 		}
 	}
 
-	void Schedule::registerToEvent(const DateWrap& date, const std::string name, int student) 
-            throw(AlreadyRegistered, RegistrationBlocked, EventDoesNotExist)
+	void Schedule::registerToEvent(const DateWrap& date, const std::string name, size_t student) 
+            throw(AlreadyRegistered, RegistrationBlocked, EventDoesNotExist, InvalidStudent)
 	{
 		for (auto event_runner = m_schedule.begin(); event_runner != m_schedule.end(); 
 														event_runner = event_runner->m_next)
@@ -36,8 +36,8 @@ namespace mtm
 		throw EventDoesNotExist();
 	}
 
-	void Schedule::unregisterFromEvent(const DateWrap& date, const std::string name, int student)
-		throw(NotRegistered, EventDoesNotExist)
+	void Schedule::unregisterFromEvent(const DateWrap& date, const std::string name, size_t student)
+		throw(NotRegistered, EventDoesNotExist, InvalidStudent)
 	{
 		for (auto event_runner = m_schedule.begin(); event_runner != m_schedule.end(); 
 														event_runner = event_runner->m_next)
