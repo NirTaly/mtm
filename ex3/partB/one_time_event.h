@@ -15,7 +15,7 @@ namespace mtm
         OneTimeEvent(const DateWrap& date,const std::string name);
 		~OneTimeEvent() = default;
 
-		void add(const BaseEvent& event) throw(NotSupported) override;
+		void add(const BaseEvent& event) override;
     
     private:
         DateWrap m_date;
@@ -32,7 +32,7 @@ namespace mtm
 
 
     template <class EventType>
-    void OneTimeEvent<EventType>::add(const BaseEvent& event) throw(NotSupported)
+    void OneTimeEvent<EventType>::add(const BaseEvent& event)
     {   
         (void) event;
         throw NotSupported();

@@ -19,13 +19,11 @@ namespace mtm
         Schedule(const Schedule& schedule) = delete;
         Schedule& operator=(const Schedule&) = delete;
 
-        void addEvents(const EventContainer& event_container) throw(EventAlreadyExists);
+        void addEvents(const EventContainer& event_container);
 
-        void registerToEvent(const DateWrap& date, const std::string name, size_t student) 
-            throw(AlreadyRegistered, RegistrationBlocked, EventDoesNotExist, InvalidStudent);
+        void registerToEvent(const DateWrap& date, const std::string name, size_t student);
 
-        void unregisterFromEvent(const DateWrap& date, const std::string name, size_t student)
-            throw(NotRegistered, EventDoesNotExist, InvalidStudent);
+        void unregisterFromEvent(const DateWrap& date, const std::string name, size_t student);
 
         void printAllEvents() const;
 
@@ -33,12 +31,10 @@ namespace mtm
 
 		void printSomeEvents(std::function<bool(const BaseEvent&)> predicate, bool verbose = false) const;
         
-        void printEventDetails(const DateWrap& date, const std::string& name) const throw(EventDoesNotExist);
+        void printEventDetails(const DateWrap& date, const std::string& name) const;
 
 
     private:
-        // void foreach(std::function <void (PriorityQueue<BaseEventWrap,EventCompare>::Node*)>);
-
 		PriorityQueue <BaseEventWrap, EventCompare> m_schedule;
     };
 }

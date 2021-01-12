@@ -18,8 +18,7 @@ namespace mtm
 		CustomEvent(const CustomEvent&);
 		CustomEvent& operator=(const CustomEvent&) = delete;
 
-		void registerParticipant(size_t participant) 
-							throw(InvalidStudent, AlreadyRegistered, RegistrationBlocked) override;
+		void registerParticipant(size_t participant) override;
 		
 		CustomEvent* clone() const override;
 	private:
@@ -37,7 +36,6 @@ namespace mtm
 
 	template <class CanRegister>
 	void CustomEvent<CanRegister>::registerParticipant(size_t participant) 
-									throw(InvalidStudent, AlreadyRegistered, RegistrationBlocked)
 	{
 		if (m_function(participant))
 		{

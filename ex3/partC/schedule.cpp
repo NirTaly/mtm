@@ -3,7 +3,7 @@
 namespace mtm
 {
 
-	void Schedule::addEvents(const EventContainer& event_container) throw( EventAlreadyExists)
+	void Schedule::addEvents(const EventContainer& event_container)
 	{
 		for (auto iter = event_container.begin(); iter != event_container.end(); ++iter)
 		{
@@ -20,7 +20,6 @@ namespace mtm
 	}
 
 	void Schedule::registerToEvent(const DateWrap& date, const std::string name, size_t student) 
-            throw(AlreadyRegistered, RegistrationBlocked, EventDoesNotExist, InvalidStudent)
 	{
 		for (auto event_runner = m_schedule.begin(); event_runner != m_schedule.end(); 
 														event_runner = event_runner->m_next)
@@ -37,7 +36,6 @@ namespace mtm
 	}
 
 	void Schedule::unregisterFromEvent(const DateWrap& date, const std::string name, size_t student)
-		throw(NotRegistered, EventDoesNotExist, InvalidStudent)
 	{
 		for (auto event_runner = m_schedule.begin(); event_runner != m_schedule.end(); 
 														event_runner = event_runner->m_next)
@@ -101,7 +99,7 @@ namespace mtm
 		}
 	}
 	
-	void Schedule::printEventDetails(const DateWrap& date, const std::string& name) const throw(EventDoesNotExist)
+	void Schedule::printEventDetails(const DateWrap& date, const std::string& name) const
 	{
 		for (auto event_runner = m_schedule.begin(); event_runner != m_schedule.end(); 
 														event_runner = event_runner->m_next)

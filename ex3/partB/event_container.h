@@ -70,7 +70,6 @@ namespace mtm
 
 	
 	private:
-		
 		PriorityQueue <BaseEventWrap, EventCompare> m_event_pq;
 		EventIterator m_event_iter;
 	};

@@ -10,7 +10,6 @@ namespace mtm
 	{ }
 
 	void ClosedEvent::registerParticipant(size_t participant) 
-								throw(InvalidStudent, AlreadyRegistered, RegistrationBlocked)
 	{
 		if (m_invitee.isIn(participant))
 		{
@@ -18,7 +17,7 @@ namespace mtm
 		}
 	}
 
-	void ClosedEvent::addInvitee(size_t participant) throw(InvalidStudent)
+	void ClosedEvent::addInvitee(size_t participant)
 	{
 		studentIsLegal(participant);
 		if (m_invitee.isIn(participant))

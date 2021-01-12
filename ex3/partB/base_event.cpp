@@ -13,7 +13,6 @@ namespace mtm
 	{	}
 
 	void BaseEvent::registerParticipant(size_t participant) 
-								throw(InvalidStudent, AlreadyRegistered, RegistrationBlocked)
 	{
 		studentIsLegal(participant);
 
@@ -25,7 +24,7 @@ namespace mtm
 		m_participants.push(participant);
 	}
 
-	void BaseEvent::unregisterParticipant(size_t participant) throw (InvalidStudent, NotRegistered)
+	void BaseEvent::unregisterParticipant(size_t participant)
 	{   
 		studentIsLegal(participant);
 		

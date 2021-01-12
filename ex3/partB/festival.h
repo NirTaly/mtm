@@ -13,7 +13,7 @@ namespace mtm
         Festival(const DateWrap& date): m_date(date) {}
 		~Festival() = default;
 
-		void add(const BaseEvent& event) throw(DateMismatch) override
+		void add(const BaseEvent& event) override
         {
             if(event.date() != m_date)
             {

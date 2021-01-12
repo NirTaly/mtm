@@ -25,11 +25,11 @@ namespace mtm
 		return (date);
 	}
 
-	DateWrap::DateWrap(int day, int month, int year) throw(InvalidDate, std::bad_alloc) :
+	DateWrap::DateWrap(int day, int month, int year):
 			m_date(create(day, month, year))
 	{	}
 
-	DateWrap::DateWrap(const DateWrap& other) throw(InvalidDate, std::bad_alloc):
+	DateWrap::DateWrap(const DateWrap& other):
 			m_date(create(other.day(), other.month(), other.year()))
 	{	}	
 
@@ -42,7 +42,7 @@ namespace mtm
 		other.m_date = tmp;
 	}
 
-	DateWrap& DateWrap::operator=(const DateWrap& other) throw(InvalidDate, std::bad_alloc)
+	DateWrap& DateWrap::operator=(const DateWrap& other)
 	{
 		DateWrap tmp(other);
 
@@ -81,7 +81,7 @@ namespace mtm
 		return (year);
 	}
 
-	const DateWrap operator+(const DateWrap& date, int days) throw(NegativeDays)
+	const DateWrap operator+(const DateWrap& date, int days)
 	{
 		if (days < 0)
 		{
@@ -96,12 +96,12 @@ namespace mtm
 
 		return tmp;
 	}
-	const DateWrap operator+(int days, const DateWrap& date) throw(NegativeDays)
+	const DateWrap operator+(int days, const DateWrap& date)
 	{
 		return (date + days);
 	}
 
-	DateWrap& DateWrap::operator+=(int days) throw(NegativeDays)
+	DateWrap& DateWrap::operator+=(int days)
 	{
 		*this = *this + days;
 

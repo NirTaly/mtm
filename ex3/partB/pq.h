@@ -115,22 +115,24 @@ namespace mtm
 			}
 		}
 
-		throw (PQNotFound());
+		// throw (PQNotFound());
 	}
 
 	template <class T, class Compare>
 	void PriorityQueue<T,Compare>::pop()
 	{
-		if (isEmpty())
+		// if (isEmpty())
+		// {
+		// 	throw (PQEmpty());
+		// }
+		if (!isEmpty())
 		{
-			throw (PQEmpty());
+			PriorityQueue<T,Compare>::Node* destroy_node = m_start.m_next;
+			
+			m_start.m_next = destroy_node->m_next;
+
+			delete destroy_node;
 		}
-
-		PriorityQueue<T,Compare>::Node* destroy_node = m_start.m_next;
-		
-		m_start.m_next = destroy_node->m_next;
-
-		delete destroy_node;
 	}
 
 	template <class T, class Compare>

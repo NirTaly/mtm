@@ -18,10 +18,9 @@ namespace mtm
 		ClosedEvent(const ClosedEvent&);
 		ClosedEvent& operator=(const ClosedEvent&) = delete;
 
-		void registerParticipant(size_t participant) 
-						throw(InvalidStudent,AlreadyRegistered, RegistrationBlocked) override;
+		void registerParticipant(size_t participant) override;
 		
-		void addInvitee(size_t participant)  throw(InvalidStudent);
+		void addInvitee(size_t participant);
 
 		ClosedEvent* clone() const override;
 	

@@ -17,9 +17,8 @@ namespace mtm
 		BaseEvent(const BaseEvent& other);
 		BaseEvent& operator=(const BaseEvent&) = delete;
 
-		virtual void registerParticipant(size_t participant) 
-								throw(InvalidStudent, AlreadyRegistered, RegistrationBlocked);
-		void unregisterParticipant(size_t participant) throw (InvalidStudent, NotRegistered);
+		virtual void registerParticipant(size_t participant);
+		void unregisterParticipant(size_t participant);
 		
 		void printShort(std::ostream& os);
 		void printLong(std::ostream& os);
