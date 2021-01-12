@@ -5,8 +5,8 @@
 		"type": "shell",
 		"label": "g++ build active file",
 		"command": "/usr/bin/g++",
-		// "args": ["-g", "-std=c++11", "-pedantic-errors", "-Wall", "-Wextra", "${fileDirname}/*.cpp" ,"${fileDirname}/../partA/date_wrap.cpp", "-L/home/nir.taly/mtm/ex3/partA/", "-ldate", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
-		"args": ["-g", "-std=c++11", "-pedantic-errors", "-Wall", "-Wextra", "${fileDirname}/dry2.cpp" ,"-o", "${fileDirname}/${fileBasenameNoExtension}"],
+		"args": ["-g", "-std=c++11", "-pedantic-errors", "-Wall", "-Wextra", "${fileDirname}/*.cpp" ,"${fileDirname}/../partA/date_wrap.cpp", "-L/home/nir.taly/mtm/ex3/partA/", "-ldate", "-o", "${fileDirname}/${fileBasenameNoExtension}"],
+		// "args": ["-g", "-std=c++11", "-pedantic-errors", "-Wall", "-Wextra", "${fileDirname}/dry2.cpp" ,"-o", "${fileDirname}/${fileBasenameNoExtension}"],
 		"options": {
 		  "cwd": "/usr/bin"
 		},
