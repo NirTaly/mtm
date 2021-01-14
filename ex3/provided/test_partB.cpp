@@ -68,13 +68,21 @@ void test2() {
     test2_aux(custom);
 }
 
+void test3() {
+
+    mtm::RecurringEvent<mtm::CustomEvent<StudentFilter>> recurring(mtm::DateWrap(1, 1, 2020),
+                                                  "CustonEvent!!!", 10, 1);
+
+    printEventsShort(recurring);
+}
 typedef void (*Test)();
-const Test tests[] = {test1, test2};
+const Test tests[] = {test1, test2, test3};
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         test1();
         test2();
+        test3();
     } else if (argc > 2) {
         std::cout << "invalid arguments" << std::endl;
     } else {

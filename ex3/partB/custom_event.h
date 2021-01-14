@@ -26,8 +26,9 @@ namespace mtm
 	};
 
 	template <class CanRegister>
-	CustomEvent<CanRegister>::CustomEvent(const DateWrap& date, const std::string& name, const CanRegister& function):
-		BaseEvent(date, name), m_function(function)
+	CustomEvent<CanRegister>::CustomEvent
+		(const DateWrap& date, const std::string& name, const CanRegister& function = CanRegister()) :
+			BaseEvent(date, name), m_function(function)
 	{	}
 
 	template <class CanRegister>
