@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "../../utils.h"
+
 void test1(const mtm::Schedule& schedule) { schedule.printAllEvents(); }
 
 void test2(const mtm::Schedule& schedule) {
@@ -61,20 +63,13 @@ int main(int argc, char* argv[]) {
     schedule.registerToEvent(mtm::DateWrap(20, 12, 2020), "Update Q&A", 1500);
     schedule.registerToEvent(mtm::DateWrap(5, 1, 2021), "Update Q&A", 850);
     schedule.registerToEvent(mtm::DateWrap(5, 1, 2021), "Update Q&A", 1500);
-    schedule.unregisterFromEvent(mtm::DateWrap(20, 12, 2020), "Update Q&A",
-                                 1500);
+    schedule.unregisterFromEvent(mtm::DateWrap(20, 12, 2020), "Update Q&A", 1500);
 
-    if (argc < 2) {
-        test1(schedule);
-        test2(schedule);
-        test3(schedule);
-        test4(schedule);
-        test5(schedule);
-    } else if (argc > 2) {
-        std::cout << "invalid arguments" << std::endl;
-    } else {
-        int i = std::atoi(argv[1]);
-        tests[i - 1](schedule);
-    }
+    test1(schedule);
+    test2(schedule);
+    test3(schedule);
+    test4(schedule);
+    test5(schedule);
+ 
     return 0;
 }

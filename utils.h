@@ -1,10 +1,15 @@
 /******************************************************************************
                               	   	 Utils
-                                    Nir Taly
+                                    Nir Tali
+                                    25.12.18
  *****************************************************************************/
 
-#include <stdio.h>			/* FILE					*/
-#include <string.h> 		/* strcmp				*/
+#include <cstdio>		/* FILE					*/
+#include <cstring> 		/* strcmp				*/
+#include <unistd.h>		/* close				*/
+
+#ifndef __UTILS_H__
+#define __UTILS_H__
 
 /******************************************************************************/
 #define BITS_IN_BYTE	(8)
@@ -21,6 +26,14 @@
 #define DBG(X)
 #endif
 
+#define KB          (1024)
+#define MB          (KB * KB)
+#define GB          (KB * MB)
+#define STORAGE_SIZE (200*MB)
+
+#define SEC         (1000)
+#define TIMEOUT     (3 * SEC)
+
 /******************************************************************************/
 						/* COLORS */
 #define COLOR_RED     "\x1b[01;31m"
@@ -31,40 +44,42 @@
 #define COLOR_CYAN    "\x1b[01;36m"
 #define COLOR_RESET   "\x1b[0m"
 
-#define LOG_RED(X) { printf("%s %s %s\n",COLOR_RED,X,COLOR_RESET); }
-#define LOG_GREEN(X) { printf("%s %s %s\n",COLOR_GREEN,X,COLOR_RESET); }
-#define LOG_MAGENTA(X) { printf("%s %s %s\n",COLOR_MAGENTA,X,COLOR_RESET); }
-#define LOG_CYAN(X) { printf("%s %s %s\n",COLOR_CYAN,X,COLOR_RESET); }
+#define LOG_YELLOW(X) 	 { printf("\n%s\t\t\t%s%s\n",COLOR_YELLOW,X,COLOR_RESET); }
+#define LOG_RED(X) 	 { printf("\n%s\t\t\t%s%s\n",COLOR_RED,X,COLOR_RESET); }
+#define LOG_GREEN(X) { printf("\n%s\t\t\t%s%s\n",COLOR_GREEN,X,COLOR_RESET); }
+#define LOG_CYAN(X) { printf("\n%s\t\t\t%s%s\n",COLOR_CYAN,X,COLOR_RESET); }
+#define LOG_BLUE(X) { printf("\n%s\t\t\t%s%s\n",COLOR_BLUE,X,COLOR_RESET); }
+#define LOG_MAGNETA(X) { printf("\n%s\t\t\t%s%s\n",COLOR_MAGENTA,X,COLOR_RESET); }
 
 /******************************************************************************/
 						/* Test Macro */
 		/* Test Case For return val == VAL:*/
 #define TEST(INDEX,EXPR,VAL,TEXT) { \
 		if (VAL != EXPR) { \
-			printf("%d)\t Test " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET, INDEX); \
+			printf("%d) Test: " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET, INDEX); \
 			fprintf(stderr, "%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
 		} else { \
-			printf("%d)\t Test " TEXT COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
+			printf("%d) Test " TEXT ":" COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
 		} }
 
 		/* Test Case For return val != VAL:*/
 #define NOT_EQUAL_TEST(INDEX,EXPR,VAL,TEXT) \
 		if (VAL == EXPR) { \
-			printf("%d)\t Test " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET, INDEX); \
+			printf("%d) Test: " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET, INDEX); \
 			fprintf(stderr, "%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
 		} else { \
-			printf("%d)\t Test " TEXT COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
+			printf("%d) Test " TEXT ":" COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
 		}
 
 /* Format For Any Type */
 #define TEST_BASE(INDEX, EXPR, VAL, TYPE, FORMAT, TEXT) { \
 			TYPE val = VAL; TYPE expr = EXPR; \
 		if (val != expr) { \
-			printf("%d)\t Test " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET "Returned: " FORMAT \
+			printf("%d) Test: " TEXT COLOR_RED "\t\t\tFAIL\n" COLOR_RESET "Returned: " FORMAT \
 				"\tExpected: " FORMAT "\n", INDEX, expr,val); \
 			fprintf(stderr, "%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
 		} else { \
-			printf("%d)\t Test " TEXT COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
+			printf("%d) Test " TEXT ":" COLOR_GREEN "\t\t\tTRUE!\n" COLOR_RESET, INDEX); \
 		} }
 
 /* comparisson between 2 strings */
@@ -78,7 +93,7 @@
 
 /* check is EXPR isn't 0 or NULL */
 #define TEST_IS_TRUE(EXPR) { \
-		if(!EXPR) { \
+		if(!(EXPR)) { \
 			fprintf(stderr, "%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
 				  } \
 							}
@@ -89,9 +104,9 @@
 				  } \
 							}
 
-#define TEST_TRUE(EXPR, VAL) { \
+#define TEST_TRUE(EXPR, VAL, I) { \
 		if(EXPR != VAL) { \
-			fprintf(stderr, ",%s: %03d: %s: FAILED!\n", __FILE__, __LINE__, #EXPR); \
+			fprintf(stderr, "i =%d ,%s: %03d: %s: FAILED!\n",I, __FILE__, __LINE__, #EXPR); \
 				  } \
 							}
 
@@ -109,5 +124,47 @@
 		fprintf(stderr, TEXT "ERROR\n"); \
 		return (EXIT_STATUS); \
 						 } \
-						 							 }
-#define CHECK_VLG(X)	{ LOG_MAGENTA("\t\t\tCheck Valgrind\n")}												  
+						 							 }											  
+#define CHECK_VLG { \
+	printf(COLOR_MAGENTA "\t\t\tCheck Valgrind!" COLOR_RESET "\n"); \
+					}
+
+/******************************************************************************/
+/******************************************************************************/
+
+// File Descriptor Manager
+class FD
+{
+public:
+	explicit FD(int fd = -1) : m_fd(fd) { }
+	~FD() { if (m_fd != -1) close(m_fd); }
+
+	int GetFD() const { return m_fd; }
+
+	FD& operator=(FD&& other) noexcept
+	{
+		if (m_fd != -1)
+		{
+			close(m_fd);
+		}
+
+
+		m_fd = other.m_fd;
+		
+		other.m_fd = -1;
+		
+		return *this;
+	}
+	operator int() { return m_fd; }
+
+	FD(const FD&) = delete;
+	FD& operator=(const FD&) = delete;
+private:
+	int m_fd;
+};
+
+/*****************************************************************************/
+
+
+
+#endif //__UTILS_H__

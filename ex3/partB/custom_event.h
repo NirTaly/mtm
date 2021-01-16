@@ -38,10 +38,14 @@ namespace mtm
 	template <class CanRegister>
 	void CustomEvent<CanRegister>::registerParticipant(size_t participant) 
 	{
+		studentIsLegal(participant);
+		
 		if (m_function(participant))
 		{
 			BaseEvent::registerParticipant(participant);
+			return;
 		}
+		throw (RegistrationBlocked());
 	}
 
 	template <class CanRegister>

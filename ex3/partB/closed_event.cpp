@@ -11,10 +11,14 @@ namespace mtm
 
 	void ClosedEvent::registerParticipant(size_t participant) 
 	{
+		studentIsLegal(participant);
+		
 		if (m_invitee.isIn(participant))
 		{
 			BaseEvent::registerParticipant(participant);
+			return;
 		}
+		throw (RegistrationBlocked());
 	}
 
 	void ClosedEvent::addInvitee(size_t participant)

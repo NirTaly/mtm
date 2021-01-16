@@ -1,7 +1,8 @@
-#include <iostream>
 #include <vector>
-#include <stdexcept>
+#include <iostream>
 
+/*								PART A										 */
+/*****************************************************************************/
 class BadInput : public std::exception {};
 
 template <class T>
@@ -27,48 +28,78 @@ std::vector<T> slice(std::vector<T> vec, int start, int step, int stop) throw(Ba
     return new_vec;
 }
 
-
-
-void print(std::vector<char> s)
+/*								PART B										 */
+/*****************************************************************************/
+class A 
 {
-	for (auto c : s)
+	class SharedPtr;
+public:
+	std::vector<SharedPtr> values;
+	void add(int x) { values.push_back(SharedPtr(new int(x))); }
+private:
+	/**
+	 * @brief RAII shared pointer class
+	 */
+	class SharedPtr
 	{
-		std::cout << c;
-	}
-	std::cout << std::endl;
-}
+	public:
+		explicit SharedPtr(int* ptr = 0): m_ref_count(new size_t(1)), m_data(ptr) { }
+		~SharedPtr()
+		{
+			Destroy();
+		}
+		SharedPtr(const SharedPtr& other): m_ref_count(other.m_ref_count), m_data(other.m_data)
+		{
+			(*m_ref_count)++;
+		}
+		SharedPtr& operator=(const SharedPtr& other)
+		{
+			SharedPtr temp(other);
 
-int main()
+			Destroy();
+
+			m_data = temp.m_data;
+			m_ref_count = temp.m_ref_count;
+			(*m_ref_count)++;
+			
+			return *this;
+		}
+
+		int& operator*() 
+		{ 
+			return (*m_data); 
+		}
+		int* operator->() 
+		{ 
+			return (m_data); 
+		}
+
+	private:
+		size_t* m_ref_count;
+		int* m_data;
+		
+		inline void Destroy()
+		{
+			if (--(*m_ref_count) == 0)
+			{
+				delete m_ref_count;
+				delete m_data;
+			}
+		}
+	};
+};
+
+int main() 
 {
-	std::vector<char> vec1 {'a', 'b', 'c', 'd', 'e'};
-
-	print(slice(vec1, 0, 2, 4));	// returns vector with values a,c
-	print(slice(vec1, 1, 1, 5));	// returns vector with values b,c,d,e
-
-	try
-	{
-		print(slice(vec1, 0, 2, 4));
-	}catch(const std::exception& e)	{
-		std::cerr << e.what() << '\n';
-	}
-	try
-	{
-		print(slice(vec1, 0, 2, 4));
-	}catch(const std::exception& e)	{
-		std::cerr << e.what() << '\n';
-	}
-	try
-	{
-		print(slice(vec1, 0, 2, 4));
-	}catch(const std::exception& e)	{
-		std::cerr << e.what() << '\n';
-	}
-	try
-	{
-		print(slice(vec1, 0, 2, 4));
-	}catch(const std::exception& e)	{
-		std::cerr << e.what() << '\n';
-	}
+	A a, sliced;
+	
+	a.add(0); a.add(1); a.add(2); a.add(3); a.add(4); a.add(5);
+	
+	sliced.values = slice(a.values, 1, 1, 4);
+	
+	*(sliced.values[0]) = 800;
+	
+	std::cout << *(a.values[1]) << std::endl;
 	
 	return 0;
 }
